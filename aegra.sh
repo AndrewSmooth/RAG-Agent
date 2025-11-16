@@ -7,9 +7,6 @@ cd aegra
 uv sync
 source .venv/bin/activate
 
-# настройка окружения
-cp .env.example .env
-# нужно проверить содержимое .env - нужны настройки БД и api ключи
 
 # запуск через docker
 docker compose up postgres -d  # только БД
