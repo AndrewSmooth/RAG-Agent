@@ -1,0 +1,12 @@
+# cpu-версия torch чтобы долго не скачивать
+--index-url https://download.pytorch.org/whl/cpu
+--extra-index-url https://pypi.org/simple/
+
+torch
+sentence-transformers
+langchain
+langchain-core
+langchain-community
+langchain-huggingface
+python-dotenv
+bs4
