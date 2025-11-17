@@ -47,7 +47,7 @@ def format_docs(docs):
     return "\n\n".join([d.page_content for d in docs])
 
 rag_chain = (
-    {"sql_schema": lambda x: schema, "context": retriever | format_docs, "question": RunnablePassthrough()}
+    {"sql_schema": schema, "context": retriever | format_docs, "question": RunnablePassthrough()}
     | prompt
     | llm
     | StrOutputParser()
