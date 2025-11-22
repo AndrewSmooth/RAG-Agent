@@ -1,0 +1,4 @@
+{
+  "question": "Покажи всех сотрудников с зарплатой выше 100000",
+  "sql": "SELECT * FROM employees WHERE salary > 100000;"
+}
