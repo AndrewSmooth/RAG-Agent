@@ -7,8 +7,9 @@ from src.core.service import GenerateService
 from src.utils.clients.embedding_client import get_chroma_client
 from langchain_openai import ChatOpenAI
 
-def create_app():
+def run_app():
     """Create and configure the application."""
+    
     load_dotenv()
     
     # Get environment variables
@@ -29,11 +30,13 @@ def create_app():
         temperature=0.1,
         max_tokens=2000,
     )
-    
-    # Create GenerateService
-    generate_service = GenerateService(chroma_client, embedding_fn, llm)
-    
-    return generate_service
+    # The actual logic is now in setup.py which serves as the main entry point
+    # This file can be used for simple demonstrations or testing
+    generate_service = GenerateService(chroma_client, embedding_fn, llm)  # This would need to be properly initialized
+    user_question = "Show all employees in the Engineering department"
+    generated_sql = generate_service.generate(user_question)
+    print(f"Question: {user_question}")
+    print(f"Generated SQL: {generated_sql}")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -48,13 +51,8 @@ def main():
             yandex_api_key=os.getenv("YANDEX_CLOUD_API_KEY"),
             yandex_folder_id=os.getenv("YANDEX_CLOUD_FOLDER")
         )
-    elif args.query:
-        # Create app and process query
-        generate_service = create_app()
-        result = generate_service.generate(args.query)
-        print(f"Generated SQL: {result}")
-    else:
-        print("Use --load-kb to load knowledge base or --query 'your question' to generate SQL")
+    
+    run_app()
 
 if __name__ == "__main__":
     main()

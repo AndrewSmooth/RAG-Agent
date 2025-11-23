@@ -1,7 +1,7 @@
 import os
 import json
 from typing import List, Dict
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 class KnowledgeBaseLoader:
     def __init__(self, kb_path: str):

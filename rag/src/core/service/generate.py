@@ -6,6 +6,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 import os
+from langchain_core.runnables import RunnableLambda
 
 class GenerateService:
 
@@ -31,7 +32,11 @@ class GenerateService:
         
         # Create chain
         rag_chain = (
-            {"sql_schema": "employees, departments", "context": formatted_context, "question": RunnablePassthrough()}
+            {
+                "sql_schema": RunnableLambda(lambda _: "employees, departments"),
+                "context": RunnableLambda(lambda _: formatted_context),
+                "question": RunnablePassthrough()
+            }
             | prompt
             | self.llm_client
             | StrOutputParser()

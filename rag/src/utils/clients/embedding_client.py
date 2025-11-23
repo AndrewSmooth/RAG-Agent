@@ -1,7 +1,14 @@
 from chromadb import HttpClient
-from chromadb.utils import embedding_functions
+
+from chromadb.api.types import (
+    Documents,
+    EmbeddingFunction,
+    Embeddings
+)
 
 import os
+
+import numpy as np
 
 class YandexEmbeddingFunction:
     def __init__(self, api_key: str, folder_id: str):
@@ -13,39 +20,22 @@ class YandexEmbeddingFunction:
         from openai import OpenAI
         self.client = OpenAI(api_key=api_key, base_url=self.url)
 
-    def __call__(self, input):
-        if isinstance(input, str):
-            input = [input]
+    def __call__(self, input : Documents) -> Embeddings:
         embeddings = []
         for text in input:
-            if isinstance(text, str):
-                trimmed = ' '.join(text.split())
-            else:
-                trimmed = str(text)
-            model = self.query_model if len(input) == 1 else self.doc_model
-            try:
-                resp = self.client.embeddings.create(
-                    input=trimmed,
-                    model=model,
-                    encoding_format="float"
-                )
-                # Get the embedding and ensure it's a list
-                embedding = resp.data[0].embedding
-                if isinstance(embedding, (list, tuple)):
-                    embedding_list = list(embedding)
-                elif hasattr(embedding, 'tolist'):
-                    embedding_list = embedding.tolist()
-                else:
-                    embedding_list = [float(embedding)]
-                embeddings.append(embedding_list)
-            except Exception as e:
-                print(f"Error embedding text: {str(text)[:50]}... -> {e}")
-                raise
+            resp = self.client.embeddings.create(
+                input=text,
+                model=self.doc_model,
+                encoding_format="float"
+            )
+            embedding_array = np.array(resp.data[0].embedding, dtype=np.float32)
+            embeddings.append(embedding_array)
         return embeddings
         
     def embed_query(self, input: str):
         """Embed a single query text."""
-        return self([input])[0]
+        output = self([input])
+        return output
         
     def embed_documents(self, texts: list):
         """Embed multiple document texts."""
