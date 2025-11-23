@@ -1,6 +1,5 @@
-
 from src.utils.semantic_searcher.generate_sql.search import search_in_knowledge_base
-from src.utils.prompts.prompt import RAG_PROMPT_TEMPLATE
+from src.utils.prompts.generate_sql.prompt import RAG_PROMPT_TEMPLATE
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
@@ -8,7 +7,7 @@ from dotenv import load_dotenv
 import os
 from langchain_core.runnables import RunnableLambda
 
-class GenerateService:
+class GenerateSQLService:
 
     def __init__(self, chroma_client, embedding_fn, llm_client):
         self.chroma_client = chroma_client

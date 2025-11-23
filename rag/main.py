@@ -3,7 +3,8 @@ import os
 from dotenv import load_dotenv
 
 from src.utils.kb_loader import load_knowledge_base_to_chroma
-from src.core.service import GenerateService
+from src.core.service.generate_sql.generate import GenerateSQLService
+from src.core.service.generate_text.generate import GenerateTextService
 from src.utils.clients.embedding_client import get_chroma_client
 from langchain_openai import ChatOpenAI
 
@@ -32,11 +33,19 @@ def run_app():
     )
     # The actual logic is now in setup.py which serves as the main entry point
     # This file can be used for simple demonstrations or testing
-    generate_service = GenerateService(chroma_client, embedding_fn, llm)  # This would need to be properly initialized
+    # Create SQL generation service
+    generate_sql_service = GenerateSQLService(chroma_client, embedding_fn, llm)
     user_question = "Show all employees in the Engineering department"
-    generated_sql = generate_service.generate(user_question)
+    generated_sql = generate_sql_service.generate(user_question)
     print(f"Question: {user_question}")
     print(f"Generated SQL: {generated_sql}")
+    
+    # Create text generation service
+    generate_text_service = GenerateTextService(chroma_client, embedding_fn, llm)
+    text_question = "What is the employee management system about?"
+    generated_text = generate_text_service.generate(text_question)
+    print(f"\nQuestion: {text_question}")
+    print(f"Generated Text: {generated_text}")
 
 def main():
     parser = argparse.ArgumentParser()

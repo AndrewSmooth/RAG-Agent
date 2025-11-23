@@ -1,5 +1,3 @@
-
-
 def search_in_knowledge_base(
     query: str,
     chroma_client,
@@ -7,7 +5,6 @@ def search_in_knowledge_base(
     k_docs=3,
     k_sql=3
 ):
-
     collection_docs = chroma_client.get_collection("docs", embedding_function=embedding_fn)
     collection_sql = chroma_client.get_collection("sql_examples", embedding_function=embedding_fn)
 
@@ -20,19 +17,3 @@ def search_in_knowledge_base(
     }
 
     return context
-
-if __name__ == "__main__":
-
-    from dotenv import load_dotenv
-    import os
-
-    load_dotenv()
-
-    YANDEX_CLOUD_API_KEY = os.getenv("YANDEX_CLOUD_API_KEY")
-    YANDEX_CLOUD_FOLDER = os.getenv("YANDEX_CLOUD_FOLDER")
-    search_in_knowledge_base(
-        "how to get all employees",
-        "http://localhost:8016",
-        YANDEX_CLOUD_API_KEY,
-        YANDEX_CLOUD_FOLDER
-    )
