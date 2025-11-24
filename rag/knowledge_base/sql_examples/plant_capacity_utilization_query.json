@@ -1,0 +1,4 @@
+{
+  "question": "Рассчитай коэффициент использования производственной мощности по всем заводам за последний квартал",
+  "sql": "SELECT p.name as plant, p.production_capacity_value, SUM(po.produced_quantity) as actual_output, ROUND((SUM(po.produced_quantity) / p.production_capacity_value) * 100, 2) as utilization_percent FROM plants p JOIN production_orders po ON p.id = po.plant_id WHERE po.status = 'completed' AND po.actual_end_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) GROUP BY p.id, p.name, p.production_capacity_value ORDER BY utilization_percent DESC;"
+}

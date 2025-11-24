@@ -1,0 +1,28 @@
+# Table: machine
+## Columns
+- `id`: уникальный идентификатор оборудования (первичный ключ)
+- `work_center_id`: ссылка на рабочий центр (внешний ключ)
+- `name`: наименование оборудования
+- `model`: модель оборудования
+- `serial_number`: серийный номер
+- `manufacturer`: производитель
+- `acquisition_date`: дата приобретения
+- `warranty_expiration_date`: дата окончания гарантии
+- `status`: статус оборудования (operational, under_maintenance, out_of_service, decommissioned)
+- `last_maintenance_date`: дата последнего технического обслуживания
+- `next_maintenance_date`: дата следующего технического обслуживания
+- `maintenance_interval_days`: интервал технического обслуживания в днях
+- `downtime_hours`: время простоя в текущем месяце (в часах)
+- `production_hours`: отработанные часы в текущем месяце
+- `energy_consumption_kwh`: энергопотребление в кВт·ч
+- `maintenance_cost_last_year`: затраты на обслуживание за последний год
+- `criticality_level`: уровень критичности (1-5, где 5 - наиболее критичное)
+- `spare_parts_count`: количество запасных частей на складе
+- `operator_required_certifications`: необходимые сертификаты оператора (в формате JSON)
+- `safety_procedures_count`: количество обязательных процедур безопасности
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

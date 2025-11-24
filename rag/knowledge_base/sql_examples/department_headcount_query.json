@@ -1,0 +1,4 @@
+{
+  "question": "Покажи количество сотрудников в каждом отделе, включая плановую и фактическую численность, отсортировано по названию отдела",
+  "sql": "SELECT d.name, d.headcount_plan, d.headcount_current, (d.headcount_current - d.headcount_plan) as difference FROM departments d WHERE d.is_active = true ORDER BY d.name;"
+}

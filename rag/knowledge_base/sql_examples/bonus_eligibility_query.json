@@ -1,0 +1,4 @@
+{
+  "question": "Определи сотрудников, eligible для годовой премии, с оценкой производительности выше 4.0 и стажем работы более 1 года",
+  "sql": "SELECT e.id, e.first_name, e.last_name, e.hire_date, pr.overall_score, DATEDIFF(CURDATE(), e.hire_date) / 365 as tenure_years FROM employees e JOIN performance_review pr ON e.id = pr.employee_id WHERE pr.review_period = CONCAT('H2-', YEAR(CURDATE())) AND pr.overall_score > 4.0 AND DATEDIFF(CURDATE(), e.hire_date) > 365 AND e.bonus_eligible = true AND e.is_active = true ORDER BY pr.overall_score DESC;"
+}
