@@ -1,0 +1,31 @@
+# Table: employee_training
+## Columns
+- `id`: уникальный идентификатор записи обучения сотрудника (первичный ключ)
+- `employee_id`: ссылка на сотрудника (внешний ключ)
+- `session_id`: ссылка на сессию обучения (внешний ключ)
+- `program_id`: ссылка на программу обучения (внешний ключ)
+- `enrollment_date`: дата записи на обучение
+- `enrollment_status`: статус записи (registered, waitlisted, cancelled, completed)
+- `attendance_status`: статус посещения (present, absent, late, excused)
+- `completion_date`: дата завершения обучения
+- `grade`: оценка за обучение (в баллах или процентном соотношении)
+- `evaluation_score`: балл оценки программы сотрудником
+- `comments`: комментарии сотрудника по программе
+- `certificate_issued`: выдан ли сертификат (true/false)
+- `certificate_number`: номер сертификата
+- `certificate_date`: дата выдачи сертификата
+- `trainer_feedback`: обратная связь от тренера
+- `manager_approval`: утверждено ли участие руководителем (true/false)
+- `manager_comments`: комментарии руководителя
+- `cost_center`: центр затрат для учета расходов
+- `budget_line`: статья бюджета
+- `reimbursement_amount`: сумма возмещения расходов (если применимо)
+- `reimbursement_status`: статус возмещения (not_requested, requested, approved, paid)
+- `skills_acquired`: приобретенные навыки (в формате JSON)
+- `competencies_improved`: улучшенные компетенции (в формате JSON)
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

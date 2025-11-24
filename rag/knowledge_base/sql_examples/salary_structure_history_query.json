@@ -1,0 +1,4 @@
+{
+  "question": "Покажи историю изменений структуры окладов для грейда D1, включая даты действия и изменения базового оклада",
+  "sql": "SELECT grade, step, base_salary, effective_date, expiration_date, (base_salary - LAG(base_salary) OVER (ORDER BY effective_date)) as salary_change FROM salary_structure WHERE grade = 'D1' ORDER BY effective_date DESC;"
+}

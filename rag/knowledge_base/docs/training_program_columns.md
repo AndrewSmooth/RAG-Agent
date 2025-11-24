@@ -1,0 +1,30 @@
+# Table: training_program
+## Columns
+- `id`: уникальный идентификатор программы обучения (первичный ключ)
+- `company_id`: ссылка на компанию (внешний ключ)
+- `name`: наименование программы обучения
+- `code`: код программы (уникальный в пределах компании)
+- `description`: полное описание программы
+- `category`: категория программы (technical, soft_skills, compliance, leadership)
+- `duration_hours`: продолжительность программы в часах
+- `duration_days`: продолжительность программы в днях
+- `format`: формат проведения (classroom, online, hybrid, on_the_job)
+- `level`: уровень сложности (beginner, intermediate, advanced)
+- `prerequisites`: предварительные требования (в формате JSON)
+- `learning_objectives`: учебные цели (в формате JSON)
+- `certification`: выдаваемый сертификат
+- `max_participants`: максимальное количество участников
+- `min_participants`: минимальное количество участников для проведения
+- `cost_per_person`: стоимость участия одного человека
+- `cost_currency`: валюта стоимости
+- `trainer_type`: тип тренера (internal, external, certified_partner)
+- `required_resources`: необходимые ресурсы (в формате JSON)
+- `evaluation_method`: метод оценки эффективности (test, survey, practical, observation)
+- `success_criteria`: критерии успешного прохождения
+- `status`: статус программы (active, inactive, under_development)
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

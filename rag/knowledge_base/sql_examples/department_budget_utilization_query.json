@@ -1,0 +1,4 @@
+{
+  "question": "Рассчитай использование бюджета по отделам, включая фактические расходы на зарплаты и премии",
+  "sql": "SELECT d.name as department, d.budget as planned_budget, SUM(e.salary) as salary_expenses, COALESCE(SUM(be.bonus_amount), 0) as bonus_expenses, (SUM(e.salary) + COALESCE(SUM(be.bonus_amount), 0)) as total_expenses, d.budget - (SUM(e.salary) + COALESCE(SUM(be.bonus_amount), 0)) as budget_remaining, ROUND(((SUM(e.salary) + COALESCE(SUM(be.bonus_amount), 0)) / d.budget) * 100, 2) as utilization_percent FROM departments d JOIN employees e ON d.id = e.department_id LEFT JOIN bonus_eligibility be ON e.id = be.employee_id WHERE d.is_active = true AND e.is_active = true GROUP BY d.id, d.name, d.budget ORDER BY utilization_percent DESC;"
+}

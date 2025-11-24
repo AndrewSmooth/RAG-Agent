@@ -1,0 +1,33 @@
+# Table: bom_component
+## Columns
+- `id`: уникальный идентификатор компонента в спецификации (первичный ключ)
+- `bom_id`: ссылка на спецификацию (внешний ключ)
+- `component_type`: тип компонента (raw_material, sub_assembly, packaging, consumable, other)
+- `material_id`: ссылка на материал (внешний ключ)
+- `material_name`: наименование материала
+- `quantity_per_unit`: количество на единицу продукта
+- `unit_of_measure`: единица измерения
+- `scrap_factor`: коэффициент потерь
+- `effective_date`: дата вступления в силу
+- `expiration_date`: дата окончания действия
+- `supplier_id`: ссылка на основного поставщика
+- `alternate_suppliers`: альтернативные поставщики (в формате JSON)
+- `lead_time_days`: время поставки в днях
+- `min_order_quantity`: минимальное количество заказа
+- `storage_conditions`: условия хранения
+- `hazard_class`: класс опасности
+- `shelf_life_days`: срок хранения в днях
+- `cost_per_unit`: стоимость единицы
+- `cost_currency`: валюта стоимости
+- `quality_specifications`: технические требования к качеству (в формате JSON)
+- `inspection_requirements`: требования к инспекции (в формате JSON)
+- `traceability_required`: требуется ли прослеживаемость
+- `batch_control_required`: требуется ли контроль по партиям
+- `substitution_allowed`: допускается ли замена
+- `substitution_rules`: правила замены (в формате JSON)
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

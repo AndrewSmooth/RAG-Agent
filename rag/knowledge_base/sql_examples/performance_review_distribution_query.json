@@ -1,0 +1,4 @@
+{
+  "question": "Покажи распределение оценок производительности по отделам за последний квартал",
+  "sql": "SELECT d.name as department, pr.performance_level, COUNT(*) as employee_count FROM performance_review pr JOIN employees e ON pr.employee_id = e.id JOIN departments d ON e.department_id = d.id WHERE pr.review_period = CONCAT('Q', QUARTER(CURDATE()), '-', YEAR(CURDATE())) GROUP BY d.name, pr.performance_level ORDER BY d.name, pr.performance_level;"
+}

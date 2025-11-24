@@ -1,0 +1,4 @@
+{
+  "question": "Проанализируй простои оборудования по причинам и выяви основные узкие места",
+  "sql": "SELECT m.name as machine, dr.name as downtime_reason, dr.category, SUM(mr.downtime_hours) as total_downtime_hours, COUNT(*) as occurrence_count, ROUND(AVG(mr.downtime_hours), 2) as avg_downtime_per_occurrence, dr.cost_per_hour * SUM(mr.downtime_hours) as total_cost FROM machines m JOIN maintenance_records mr ON m.id = mr.machine_id JOIN downtime_reasons dr ON mr.downtime_reason_id = dr.id WHERE mr.start_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) GROUP BY m.id, m.name, dr.id, dr.name, dr.category, dr.cost_per_hour ORDER BY total_downtime_hours DESC, total_cost DESC LIMIT 10;"
+}

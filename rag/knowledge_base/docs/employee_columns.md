@@ -1,0 +1,34 @@
+# Table: employee
+## Columns
+- `id`: уникальный идентификатор сотрудника (первичный ключ)
+- `company_id`: ссылка на компанию (внешний ключ)
+- `business_unit_id`: ссылка на бизнес-подразделение (внешний ключ)
+- `department_id`: ссылка на отдел (внешний ключ)
+- `position_id`: ссылка на должность (внешний ключ)
+- `employee_number`: табельный номер сотрудника (уникальный)
+- `first_name`: имя сотрудника
+- `last_name`: фамилия сотрудника
+- `middle_name`: отчество сотрудника
+- `full_name`: полное имя (формируется автоматически)
+- `birth_date`: дата рождения
+- `gender`: пол (M, F, Other)
+- `email`: корпоративный email
+- `phone`: рабочий телефон
+- `address`: домашний адрес
+- `employment_type`: тип занятости (full-time, part-time, contract, temporary)
+- `employment_status`: статус занятости (active, on_leave, terminated, retired)
+- `hire_date`: дата приема на работу
+- `termination_date`: дата увольнения
+- `manager_id`: ссылка на руководителя
+- `probation_end_date`: дата окончания испытательного срока
+- `work_schedule_id`: ссылка на график работы
+- `salary`: оклад в рублях, до налогообложения
+- `salary_currency`: валюта оклада
+- `salary_grade`: грейд оклада
+- `bonus_eligible`: флаг eligibility для премирования
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

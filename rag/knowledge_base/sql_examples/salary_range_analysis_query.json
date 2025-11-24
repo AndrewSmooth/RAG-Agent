@@ -1,0 +1,4 @@
+{
+  "question": "Проанализируй оклады сотрудников по грейдам, показав минимальный, максимальный и средний оклад в каждом грейде",
+  "sql": "SELECT e.salary_grade, MIN(e.salary) as min_salary, MAX(e.salary) as max_salary, AVG(e.salary) as avg_salary, COUNT(*) as employee_count FROM employees e WHERE e.is_active = true GROUP BY e.salary_grade ORDER BY e.salary_grade;"
+}
