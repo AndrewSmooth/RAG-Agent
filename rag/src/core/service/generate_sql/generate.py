@@ -24,15 +24,17 @@ class GenerateSQLService:
         
         # Format context - handle empty results
         sql_examples = context["sql_examples"] if context["sql_examples"] else ["No SQL examples found"]
-        formatted_context = "\n\n".join(sql_examples)
-        
+        docs = context["docs"] if context["docs"] else ["No documentation found"]
+        all_context = sql_examples + docs
+        formatted_context = "\n\n".join(all_context)
+
         # Create prompt
         prompt = ChatPromptTemplate.from_template(RAG_PROMPT_TEMPLATE)
         
         # Create chain
         rag_chain = (
             {
-                "sql_schema": RunnableLambda(lambda _: "employees, departments"),
+                "sql_schema": RunnableLambda(lambda _: docs),
                 "context": RunnableLambda(lambda _: formatted_context),
                 "question": RunnablePassthrough()
             }
