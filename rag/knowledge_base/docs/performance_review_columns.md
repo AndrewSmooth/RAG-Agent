@@ -1,0 +1,30 @@
+# Table: performance_review
+## Columns
+- `id`: уникальный идентификатор оценки производительности (первичный ключ)
+- `employee_id`: ссылка на сотрудника (внешний ключ)
+- `review_period`: период оценки (Q1-2023, H1-2023, 2023)
+- `review_date`: дата проведения оценки
+- `reviewer_id`: идентификатор оценивающего (обычно руководитель)
+- `self_review`: текст самооценки сотрудника
+- `manager_review`: текст оценки руководителя
+- `peer_reviews`: текст оценок коллег (в формате JSON)
+- `overall_score`: общий балл оценки (1-5)
+- `performance_level`: уровень производительности (Poor, Below Average, Good, Excellent)
+- `goals_achievement`: степень достижения целей (в процентах)
+- `competency_scores`: баллы по компетенциям (в формате JSON)
+- `strengths`: выявленные сильные стороны
+- `development_areas`: зоны для развития
+- `promotion_recommendation`: рекомендация о повышении (yes, no, consider_later)
+- `bonus_recommendation`: рекомендация о премировании (percentage)
+- `development_plan`: план развития на следующий период
+- `improvement_deadline`: срок реализации плана развития
+- `status`: статус оценки (draft, submitted, approved, rejected)
+- `approved_by`: идентификатор утвердившего оценку
+- `approval_date`: дата утверждения
+- `next_review_date`: дата следующей оценки
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

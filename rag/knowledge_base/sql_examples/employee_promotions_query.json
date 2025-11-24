@@ -1,0 +1,4 @@
+{
+  "question": "Найди всех сотрудников, получивших повышение в текущем году, включая их старую и новую должности",
+  "sql": "SELECT e.first_name, e.last_name, eh.old_value as old_position, eh.new_value as new_position, eh.effective_date FROM employees e JOIN employee_history eh ON e.id = eh.employee_id WHERE eh.field_changed = 'position_id' AND eh.change_type = 'promotion' AND YEAR(eh.effective_date) = YEAR(CURDATE()) ORDER BY eh.effective_date DESC;"
+}

@@ -1,0 +1,30 @@
+# Table: operation
+## Columns
+- `id`: уникальный идентификатор производственной операции (первичный ключ)
+- `name`: наименование операции
+- `code`: код операции (уникальный)
+- `description`: подробное описание технологического процесса
+- `department_id`: ссылка на отдел (внешний ключ)
+- `work_center_id`: ссылка на рабочий центр (внешний ключ)
+- `standard_time_minutes`: нормативное время выполнения в минутах
+- `setup_time_minutes`: время наладки в минутах
+- `cycle_time_seconds`: цикловое время в секундах
+- `changeover_time_minutes`: время переналадки между продуктами
+- `labor_requirements`: требования к персоналу (в формате JSON)
+- `equipment_requirements`: требования к оборудованию (в формате JSON)
+- `material_requirements`: требования к материалам (в формате JSON)
+- `quality_checkpoints`: контрольные точки качества (в формате JSON)
+- `safety_procedures`: обязательные процедуры безопасности (в формате JSON)
+- `environmental_requirements`: экологические требования (в формате JSON)
+- `energy_consumption_kwh`: энергопотребление в кВт·ч на единицу продукции
+- `waste_generation_kg`: образование отходов в кг на единицу продукции
+- `scrap_rate_percent`: нормативный процент брака
+- `first_pass_yield_rate`: нормативный коэффициент выхода годной продукции
+- `automation_level`: уровень автоматизации (manual, semi_automated, automated)
+- `status`: статус операции (active, inactive, under_review)
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

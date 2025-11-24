@@ -1,0 +1,4 @@
+{
+  "question": "Проанализируй затраты на техническое обслуживание оборудования по типам и выяви наиболее дорогие в обслуживании машины",
+  "sql": "SELECT m.name as machine, mt.name as machine_type, COUNT(mr.id) as maintenance_count, SUM(mr.actual_cost) as total_maintenance_cost, AVG(mr.actual_cost) as avg_maintenance_cost, SUM(mr.downtime_hours) as total_downtime_hours, SUM(mr.labor_hours) as total_labor_hours, ROUND(SUM(mr.actual_cost) / SUM(mr.production_hours) * 1000, 2) as cost_per_1000_production_hours FROM machines m JOIN machine_types mt ON m.machine_type_id = mt.id JOIN maintenance_records mr ON m.id = mr.machine_id WHERE mr.start_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH) GROUP BY m.id, m.name, mt.id, mt.name ORDER BY total_maintenance_cost DESC, cost_per_1000_production_hours DESC LIMIT 10;"
+}

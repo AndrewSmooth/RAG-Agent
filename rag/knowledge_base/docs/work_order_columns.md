@@ -1,0 +1,34 @@
+# Table: work_order
+## Columns
+- `id`: уникальный идентификатор наряда-заказа (первичный ключ)
+- `production_order_id`: ссылка на производственный заказ (внешний ключ)
+- `operation_id`: ссылка на операцию (внешний ключ)
+- `work_center_id`: ссылка на рабочий центр (внешний ключ)
+- `order_number`: номер наряда-заказа (уникальный)
+- `description`: описание работы
+- `planned_start_date`: планируемая дата начала
+- `planned_end_date`: планируемая дата окончания
+- `actual_start_date`: фактическая дата начала
+- `actual_end_date`: фактическая дата окончания
+- `planned_duration_hours`: планируемая продолжительность в часах
+- `actual_duration_hours`: фактическая продолжительность в часах
+- `planned_labor_hours`: планируемые трудозатраты
+- `actual_labor_hours`: фактические трудозатраты
+- `planned_material_cost`: планируемая стоимость материалов
+- `actual_material_cost`: фактическая стоимость материалов
+- `material_cost_currency`: валюта стоимости материалов
+- `status`: статус наряда (planned, released, in_progress, completed, cancelled)
+- `priority`: приоритет наряда (low, medium, high)
+- `assigned_technicians`: назначенные техники (в формате JSON)
+- `quality_checks_required`: требуется ли контроль качества
+- `quality_checks_passed`: пройден ли контроль качества
+- `rework_required`: требуется ли переделка
+- `rework_reason`: причина переделки
+- `downtime_minutes`: время простоя во время выполнения
+- `overtime_hours`: сверхурочные часы
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений
