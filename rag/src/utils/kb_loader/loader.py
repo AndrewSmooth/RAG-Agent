@@ -23,6 +23,36 @@ class KnowledgeBaseLoader:
                 )
         return docs
 
+    def load_t2t_docs(self) -> List[Document]:
+        t2t_docs_dir = os.path.join(self.kb_path, "t2t_docs")
+        t2t_docs = []
+        for filename in os.listdir(t2t_docs_dir):
+            filepath = os.path.join(t2t_docs_dir, filename)
+
+            if not (filename.lower().endswith(".txt") or filename.lower().endswith(".md")):
+                continue
+
+            try:
+                with open(filepath, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+
+                t2t_docs.append(
+                    Document(
+                        page_content=content,
+                        metadata={
+                            "source": filename,
+                            "type": "t2t_doc"
+                        }
+                    )
+                )
+                print(f"✅ Загружен: {filename}")
+
+            except Exception as e:
+                print(f"❌ Ошибка чтения {filename}: {e}")
+                continue
+
+        return t2t_docs
+
     def load_sql_examples(self) -> List[Document]:
         sql_dir = os.path.join(self.kb_path, "sql_examples")
         examples = []

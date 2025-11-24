@@ -8,7 +8,7 @@ from src.core.service.generate_text.generate import GenerateTextService
 from src.utils.clients.embedding_client import get_chroma_client
 from langchain_openai import ChatOpenAI
 
-def run_app():
+def run_app(query: str = None):
     """Create and configure the application."""
     
     load_dotenv()
@@ -42,7 +42,10 @@ def run_app():
     
     # Create text generation service
     generate_text_service = GenerateTextService(chroma_client, embedding_fn, llm)
-    text_question = "What is the employee management system about?"
+    if query:
+        text_question = query
+    else:
+        text_question = "What is the employee management system about?"
     generated_text = generate_text_service.generate(text_question)
     print(f"\nQuestion: {text_question}")
     print(f"Generated Text: {generated_text}")
@@ -52,6 +55,7 @@ def main():
     parser.add_argument("--load-kb", action="store_true", help="Load knowledge base to Chroma")
     parser.add_argument("--query", type=str, help="Query to convert to SQL")
     args = parser.parse_args()
+    query = ''
 
     if args.load_kb:
         load_knowledge_base_to_chroma(
@@ -60,8 +64,9 @@ def main():
             yandex_api_key=os.getenv("YANDEX_CLOUD_API_KEY"),
             yandex_folder_id=os.getenv("YANDEX_CLOUD_FOLDER")
         )
+        query = args.query
     
-    run_app()
+    run_app(query)
 
 if __name__ == "__main__":
     main()
