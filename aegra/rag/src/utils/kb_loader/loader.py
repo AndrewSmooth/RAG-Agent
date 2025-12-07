@@ -4,7 +4,7 @@ from typing import List, Dict, Any
 from langchain_core.documents import Document
 import hashlib
 
-from ..clients import get_chroma_client
+from rag.src.utils.clients import get_chroma_client
 
 class KnowledgeBaseLoader:
     def __init__(
@@ -36,7 +36,7 @@ class KnowledgeBaseLoader:
                 )
         return docs
 
-    def load_t2t_docs(self, file: Any = None, filename: str = None) -> List[Document]:
+    def load_t2t_docs(self, file: Any = None) -> List[Document]:
         t2t_docs = []
 
         def append_doc(file_content: Any, file_name: str) -> None:
@@ -52,7 +52,7 @@ class KnowledgeBaseLoader:
             print(f"✅ Загружен: {filename}")
 
         if file:
-            append_doc(file, filename)
+            append_doc(file.read(), file.filename)
         else:
             t2t_docs_dir = os.path.join(self.kb_path, "t2t_docs")
 
@@ -96,17 +96,15 @@ class KnowledgeBaseLoader:
     def load_file(
             self,
             file: Any,
-            file_name: str,
             doc_type: str = None
     ):
         if not doc_type:
             return {'error': 'Не указан тип документа'}
 
         doc = []
-        filename = file_name
 
         if doc_type == 't2t_docs':
-            doc = self.load_t2t_docs(file, filename)
+            doc = self.load_t2t_docs(file=file)
         # elif doc_type == 'docs':
         #     doc = self.load_docs(file=file)
         # elif doc_type == 'sql_examples':
@@ -116,6 +114,7 @@ class KnowledgeBaseLoader:
             return {'error': f'Указан недопустимый тип документа: {doc_type}'}
 
         chroma_client, embedding_fn = get_chroma_client(
+            chroma_url=self.chroma_url,
             yandex_api_key=self.yandex_api_key,
             yandex_folder_id=self.yandex_folder_id
         )
@@ -125,7 +124,7 @@ class KnowledgeBaseLoader:
             embedding_function=embedding_fn
         )
 
-        doc_id = f'{doc_type}_{self.hash_filename(filename)}'
+        doc_id = f'{doc_type}_{self.hash_filename(file.filename)}'
         existing = chroma_collection.get(ids=[doc_id])
 
         if existing['ids']:

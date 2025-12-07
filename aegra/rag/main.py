@@ -3,6 +3,8 @@ import os
 from dotenv import load_dotenv
 
 from src.utils.kb_loader import load_knowledge_base_to_chroma
+from src.core.service.generate_sql.generate import GenerateSQLService
+from src.core.service.generate_text.generate import GenerateTextService
 from src.utils.clients.embedding_client import get_chroma_client
 from langchain_openai import ChatOpenAI
 

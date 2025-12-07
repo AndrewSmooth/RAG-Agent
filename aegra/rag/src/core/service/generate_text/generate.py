@@ -1,5 +1,5 @@
-from ..semantic_searcher.generate_sql.search import search_in_knowledge_base
-from ..prompts.generate_sql.prompt import RAG_PROMPT_TEMPLATE
+from rag.src.utils.semantic_searcher.generate_text.search import search_in_knowledge_base
+from rag.src.utils.prompts.generate_text.prompt import RAG_PROMPT_TEMPLATE
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 from langchain_core.runnables import RunnableLambda
 
-class GenerateSQLService:
+class GenerateTextService:
 
     def __init__(self, chroma_client, embedding_fn, llm_client):
         self.chroma_client = chroma_client
@@ -23,18 +23,15 @@ class GenerateSQLService:
         )
         
         # Format context - handle empty results
-        sql_examples = context["sql_examples"] if context["sql_examples"] else ["No SQL examples found"]
-        docs = context["docs"] if context["docs"] else ["No documentation found"]
-        all_context = sql_examples + docs
-        formatted_context = "\n\n".join(all_context)
-
+        t2t_docs = context["t2t_docs"] if context["t2t_docs"] else ["No relevant t2t_documents found"]
+        formatted_context = "\n\n".join(t2t_docs)
+        
         # Create prompt
         prompt = ChatPromptTemplate.from_template(RAG_PROMPT_TEMPLATE)
         
         # Create chain
         rag_chain = (
             {
-                "sql_schema": RunnableLambda(lambda _: docs),
                 "context": RunnableLambda(lambda _: formatted_context),
                 "question": RunnablePassthrough()
             }

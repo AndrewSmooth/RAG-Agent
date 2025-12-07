@@ -1,5 +1,5 @@
-from ..semantic_searcher.generate_sql.search import search_in_knowledge_base
-from ..prompts.generate_sql.prompt import RAG_PROMPT_TEMPLATE
+from rag.src.utils.semantic_searcher.generate_sql.search import search_in_knowledge_base
+from rag.src.utils.prompts.generate_sql.prompt import RAG_PROMPT_TEMPLATE
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
