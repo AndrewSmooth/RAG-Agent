@@ -144,6 +144,48 @@ export function Thread() {
 
   const lastError = useRef<string | undefined>(undefined);
 
+  // --- НАЧАЛО ВСТАВКИ ---
+const handleTxtMdUpload = async () => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".txt,.md"; // только txt и md
+  input.onchange = async (e: any) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Дополнительная проверка по расширению (на всякий случай)
+    const allowedExtensions = [".txt", ".md"];
+    const fileExtension = file.name.toLowerCase().split(".").pop();
+    if (!fileExtension || !allowedExtensions.includes(`.${fileExtension}`)) {
+      toast.error("Only .txt and .md files are allowed.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      // 👇 Укажите вашу ручку. Если она не /upload/ — замените!
+      const res = await fetch("http://localhost:8000/store/vector?doc_type=t2t_docs", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        toast.success("File sent successfully!");
+      } else {
+        toast.error("Upload failed. Check backend logs.");
+        console.error("Backend error:", await res.text());
+      }
+    } catch (err) {
+      console.error("Network error:", err);
+      toast.error("Could not connect to backend (is it running on port 8000?)");
+    }
+  };
+  input.click();
+};
+// --- КОНЕЦ ВСТАВКИ ---
+
   const setThreadId = (id: string | null) => {
     _setThreadId(id);
 
@@ -505,7 +547,7 @@ export function Thread() {
                         >
                           <Plus className="size-5 text-gray-600" />
                           <span className="text-sm text-gray-600">
-                            Upload PDF or Image
+                            Upload PNG or PDF
                           </span>
                         </Label>
                         <input
@@ -516,6 +558,16 @@ export function Thread() {
                           accept="image/jpeg,image/png,image/gif,image/webp,application/pdf"
                           className="hidden"
                         />
+                          <a
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleTxtMdUpload();
+                              }}
+                              className="mt-2 flex cursor-pointer items-center gap-2 text-sm boldtext-gray-600 hover:underline"
+                            >
+                              📄 Upload file to KB
+                            </a>
                         {stream.isLoading ? (
                           <Button
                             key="stop"
@@ -537,6 +589,7 @@ export function Thread() {
                             Send
                           </Button>
                         )}
+
                       </div>
                     </form>
                   </div>

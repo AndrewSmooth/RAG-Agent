@@ -1,5 +1,5 @@
 from .loader import KnowledgeBaseLoader
-from ..clients import get_chroma_client
+from rag.src.utils.clients import get_chroma_client
 from typing import Any
 import hashlib
 
