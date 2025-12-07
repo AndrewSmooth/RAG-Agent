@@ -16,6 +16,8 @@ from react_agent.state import InputState, State
 from react_agent.tools import TOOLS
 from react_agent.utils import load_chat_model
 
+from aegra.rag.src.core.service import generate_answer
+
 # Define the function that calls the model
 
 
@@ -42,12 +44,30 @@ async def call_model(
     )
 
     # Get the model's response
-    response = cast(
-        "AIMessage",
-        await model.ainvoke(
-            [{"role": "system", "content": system_message}, *state.messages]
-        ),
-    )
+    # response = cast(
+    #     "AIMessage",
+    #     await model.ainvoke(
+    #         [{"role": "system", "content": system_message}, *state.messages]
+    #     ),
+    # )
+
+    user_text = _get_last_message_text(state)
+    response = ''
+
+    if user_text:
+        if 't2t' in user_text:
+            # from aegra.rag.src.core.service import get_answer_from_rag
+            answer = generate_answer(f'Контекст: {system_message}\n' + user_text)
+            response = AIMessage(content=answer)
+        #TODO: similarly make for t2sql
+    else:
+        # Get the model's response
+        response = cast(
+            "AIMessage",
+            await model.ainvoke(
+                [{"role": "system", "content": system_message}, *state.messages]
+            ),
+        )
 
     # Handle the case when it's the last step and the model still wants to use a tool
     if state.is_last_step and response.tool_calls:
@@ -63,6 +83,18 @@ async def call_model(
     # Return the model's response as a list to be added to existing messages
     return {"messages": [response]}
 
+
+def _get_last_message_text(state):
+    """Parse text from last user message = current query"""
+    last_human_message = None
+    for msg in reversed(state.messages):
+        if msg.type == "human":
+            last_human_message = msg
+            break
+
+    if last_human_message:
+        return last_human_message.content[0]["text"]
+    return None
 
 # Define a new graph
 

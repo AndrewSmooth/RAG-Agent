@@ -107,6 +107,7 @@ class KnowledgeBaseLoader:
 
         if doc_type == 't2t_docs':
             doc = self.load_t2t_docs(file=file, filename=filename)
+        #TODO: add other doc types
         # elif doc_type == 'docs':
         #     doc = self.load_docs(file=file)
         # elif doc_type == 'sql_examples':
@@ -116,9 +117,9 @@ class KnowledgeBaseLoader:
             return {'error': f'Указан недопустимый тип документа: {doc_type}'}
 
         chroma_client, embedding_fn = get_chroma_client(
-            chroma_url=self.chroma_url,
-            yandex_api_key=self.yandex_api_key,
-            yandex_folder_id=self.yandex_folder_id
+            chroma_url=self.chroma_url[0][0],
+            yandex_api_key=self.yandex_api_key[0][0],
+            yandex_folder_id=self.yandex_folder_id[0]
         )
 
         chroma_collection = chroma_client.get_or_create_collection(

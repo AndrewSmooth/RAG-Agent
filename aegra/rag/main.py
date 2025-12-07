@@ -8,21 +8,22 @@ from src.core.service.generate_text.generate import GenerateTextService
 from src.utils.clients.embedding_client import get_chroma_client
 from langchain_openai import ChatOpenAI
 
-from config import yandex_api_key, yandex_folder_id
 
 def run_app(query: str = None):
     """Create and configure the application."""
-    
+
     load_dotenv()
-    
+
     # Get environment variables
-    
+    yandex_api_key = os.getenv("YANDEX_CLOUD_API_KEY")
+    yandex_folder_id = os.getenv("YANDEX_CLOUD_FOLDER")
+
     # Create chroma client and embedding function
     chroma_client, embedding_fn = get_chroma_client(
         yandex_api_key=yandex_api_key,
         yandex_folder_id=yandex_folder_id
     )
-    
+
     # Create LLM client
     llm = ChatOpenAI(
         api_key=yandex_api_key,
@@ -39,7 +40,7 @@ def run_app(query: str = None):
     generated_sql = generate_sql_service.generate(user_question)
     print(f"Question: {user_question}")
     print(f"Generated SQL: {generated_sql}")
-    
+
     # Create text generation service
     generate_text_service = GenerateTextService(chroma_client, embedding_fn, llm)
     if query:
@@ -49,6 +50,7 @@ def run_app(query: str = None):
     generated_text = generate_text_service.generate(text_question)
     print(f"\nQuestion: {text_question}")
     print(f"Generated Text: {generated_text}")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -65,9 +67,9 @@ def main():
             yandex_folder_id=os.getenv("YANDEX_CLOUD_FOLDER")
         )
         query = args.query
-    
+
     run_app(query)
+
 
 if __name__ == "__main__":
     main()
-
