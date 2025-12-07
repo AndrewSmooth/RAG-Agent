@@ -36,7 +36,7 @@ class KnowledgeBaseLoader:
                 )
         return docs
 
-    def load_t2t_docs(self, file: Any = None) -> List[Document]:
+    def load_t2t_docs(self, file: Any = None, filename: str = None) -> List[Document]:
         t2t_docs = []
 
         def append_doc(file_content: Any, file_name: str) -> None:
@@ -52,7 +52,8 @@ class KnowledgeBaseLoader:
             print(f"✅ Загружен: {filename}")
 
         if file:
-            append_doc(file.read(), file.filename)
+            append_doc(file, filename)
+            print('end')
         else:
             t2t_docs_dir = os.path.join(self.kb_path, "t2t_docs")
 
@@ -70,7 +71,7 @@ class KnowledgeBaseLoader:
                 except Exception as e:
                     print(f"❌ Ошибка чтения {filename}: {e}")
                     continue
-
+        print('end2')
         return t2t_docs
 
     def load_sql_examples(self) -> List[Document]:
@@ -96,6 +97,7 @@ class KnowledgeBaseLoader:
     def load_file(
             self,
             file: Any,
+            filename: str,
             doc_type: str = None
     ):
         if not doc_type:
@@ -104,7 +106,7 @@ class KnowledgeBaseLoader:
         doc = []
 
         if doc_type == 't2t_docs':
-            doc = self.load_t2t_docs(file=file)
+            doc = self.load_t2t_docs(file=file, filename=filename)
         # elif doc_type == 'docs':
         #     doc = self.load_docs(file=file)
         # elif doc_type == 'sql_examples':
@@ -124,18 +126,29 @@ class KnowledgeBaseLoader:
             embedding_function=embedding_fn
         )
 
-        doc_id = f'{doc_type}_{self.hash_filename(file.filename)}'
+        doc_id = f'{doc_type}_{self.hash_filename(filename)}'
         existing = chroma_collection.get(ids=[doc_id])
 
         if existing['ids']:
             print(f"⚠️ Документ с ID '{doc_id}' уже существует. Пропускаем.")
         else:
-            chroma_collection.add(
-                ids=[doc_id],
-                documents=[doc[0]['page_content']],
-                metadatas=[doc[0]['metadata']],
-            )
-            print(f"✅ Добавлен новый документ: {doc_id}")
+            print("LOG", doc)
+            try:
+                text_to_embed = doc[0].page_content
+                print(f"Embedding text length: {len(text_to_embed)}")
+                print(f"First 100 chars: {repr(text_to_embed[:100])}")
+                if not text_to_embed or not isinstance(text_to_embed, str):
+                    raise ValueError("Invalid page_content for embedding")
+
+                chroma_collection.add(
+                    ids=[doc_id],
+                    documents=[doc[0].page_content, ],
+                    metadatas=[doc[0].metadata, ],
+                )
+                print(f"✅ Добавлен новый документ: {doc_id}")
+            except Exception as e:
+                print(f"Chroma add failed: {repr(e)}")
+                raise
 
         return {'ok': True}
 

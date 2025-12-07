@@ -1,8 +1,10 @@
 """Store endpoints for Agent Protocol"""
 
 from typing import Union
+import sys
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile
 
 from ..core.auth_deps import get_current_user
 from ..models import (
@@ -14,6 +16,11 @@ from ..models import (
     StoreSearchResponse,
     User,
 )
+
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from rag import kb_loader
 
 router = APIRouter()
 
@@ -143,6 +150,27 @@ async def search_store_items(
         limit=request.limit or 20,
         offset=request.offset or 0,
     )
+
+@router.post("/store/vector")
+async def add_doc_to_vec_store(file: UploadFile, doc_type: str = 't2t_docs'):
+    """
+        Params: file (UploadFile), doc_type (str)
+        doc_types: 't2t_docs', 'docs', 'sql_examples'
+    """
+    content_bytes = await file.read()
+    contents = content_bytes.decode('utf-8')
+
+    args = [contents, file.filename, doc_type]
+    print('LOG')
+    print(len(args), args)
+    res = kb_loader.load_file(file=contents, filename=file.filename, doc_type=doc_type)
+
+    if not res:
+        return {'status': 'undefined error'}
+    if error := res.get('error'):
+        return {'error': error}
+
+    return {"status": "ok"}
 
 
 def apply_user_namespace_scoping(user_id: str, namespace: list[str]) -> list[str]:

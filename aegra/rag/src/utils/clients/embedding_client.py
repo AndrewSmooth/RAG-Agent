@@ -49,6 +49,7 @@ def get_chroma_client(
     yandex_api_key: str = None,
     yandex_folder_id: str = None
 ):
+    print('good')
     client = HttpClient(host="localhost", port=8016)
 
     embedding_function = YandexEmbeddingFunction(

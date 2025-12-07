@@ -15,10 +15,10 @@ RUN addgroup --system app && adduser --system --ingroup app app
 # Builder stage
 # -----------------------------
 FROM base AS builder
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#    build-essential \
+#    libpq-dev \
+#    && rm -rf /var/lib/apt/lists/*
 
 # Copy project metadata and source
 COPY pyproject.toml ./
@@ -49,6 +49,7 @@ COPY alembic/ ./alembic/
 COPY aegra.json ./aegra.json
 COPY auth.py ./auth.py
 COPY graphs/ ./graphs/
+COPY rag/ ./rag
 
 # Copy src to keep compatibility with current compose command using 'src.agent_server.main:app'
 # (We can switch compose to 'agent_server.main:app' later and drop this for a smaller image.)
