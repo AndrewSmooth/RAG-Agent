@@ -1,4 +1,4 @@
-RAG_PROMPT_TEMPLATE = """
+RAG_TEXT_PROMPT_TEMPLATE = """
 You are an expert assistant that provides helpful and accurate responses based on the provided context.
 Use the following information to answer the question.
 

@@ -6,43 +6,55 @@ from chromadb.api.types import (
     Embeddings
 )
 
-import os
-
+import requests
+import time
 import numpy as np
 
 class YandexEmbeddingFunction:
     def __init__(self, api_key: str, folder_id: str):
-        self.api_key = api_key
-        self.folder_id = folder_id
-        self.url = "https://llm.api.cloud.yandex.net/v1"
-        self.doc_model = f"emb://{folder_id}/text-search-doc/latest"
+        self.doc_uri = f"emb://{folder_id}/text-search-doc/latest"
+        self.query_uri = f"emb://{folder_id}/text-search-query/latest"
+        self.embed_url = "https://llm.api.cloud.yandex.net:443/foundationModels/v1/textEmbedding"
+        self.headers = {"Content-Type": "application/json", "Authorization": f"Api-Key {api_key}", "x-folder-id": f"{folder_id}"}
         self.query_model = f"emb://{folder_id}/text-search-query/latest"
-        from openai import OpenAI
-        self.client = OpenAI(api_key=api_key, base_url=self.url)
 
-    def __call__(self, input : Documents) -> Embeddings:
-        embeddings = []
-        for text in input:
-            resp = self.client.embeddings.create(
-                input=text,
-                model=self.doc_model,
-                encoding_format="float"
-            )
-            embedding_array = np.array(resp.data[0].embedding, dtype=np.float32)
-            embeddings.append(embedding_array)
-        return embeddings
+    def _embed_text(self, text: str):
+        query_data = {
+            "modelUri": self.query_uri,
+            "text": text,
+        }
+
+        response = requests.post(self.embed_url, json=query_data, headers=self.headers)
+        response.raise_for_status()
+        embedding_list = response.json()["embedding"]
+        embedding = np.array(embedding_list, dtype=np.float32)
+
+        # Задержка для соблюдения рейт-лимита (Yandex: ~10 RPS)
+        time.sleep(0.1)
+
+        return embedding
+    
+    def __call__(self, input) -> Embeddings:
+        if isinstance(input, list):
+            
+            return [self._embed_text(text) for text in input]
+        elif isinstance(input, str):
+            return self._embed_text(input)
+        else:
+            raise ValueError("wrong type for call embedding function")
+        
         
     def embed_query(self, input: str):
         """Embed a single query text."""
-        output = self([input])
+        output = self(input)
         return output
         
     def embed_documents(self, texts: list):
         """Embed multiple document texts."""
-        return self(texts)
+        pass
     
     def name(self):
-        return f"yandex-embeddings-{self.folder_id}"
+        return f"yandex-embeddings-"
 
 def get_chroma_client(
     chroma_url: str = "http://localhost:8000",

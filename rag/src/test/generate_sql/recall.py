@@ -1,10 +1,14 @@
-import sqlglot
+import sqlglot, sqlglot.errors
 from sqlglot import parse_one
 from typing import Tuple, List
 
 def extract_sqls(sql: str) -> Tuple[List[str], List[str]]:
 
-    expr = parse_one(sql, dialect="duckdb")
+    try:
+        expr = parse_one(sql, dialect="duckdb")
+    except sqlglot.errors.ParseError:
+        print(sql)
+        return ["", ""]
     tables = list(expr.find_all(sqlglot.exp.Table))
     columns = list(expr.find_all(sqlglot.exp.Column))
     return (tables, columns)

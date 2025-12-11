@@ -1,10 +1,8 @@
-from ..semantic_searcher.generate_sql.search import search_in_knowledge_base
-from ..prompts.generate_sql.prompt import RAG_PROMPT_TEMPLATE
+from src.utils.semantic_searcher.generate_sql import search_in_knowledge_base
+from src.utils.prompts.generate_sql import RAG_SQL_PROMPT_TEMPLATE
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
-from dotenv import load_dotenv
-import os
 from langchain_core.runnables import RunnableLambda
 
 class GenerateSQLService:
@@ -28,8 +26,10 @@ class GenerateSQLService:
         all_context = sql_examples + docs
         formatted_context = "\n\n".join(all_context)
 
+        print(formatted_context)
+
         # Create prompt
-        prompt = ChatPromptTemplate.from_template(RAG_PROMPT_TEMPLATE)
+        prompt = ChatPromptTemplate.from_template(RAG_SQL_PROMPT_TEMPLATE)
         
         # Create chain
         rag_chain = (

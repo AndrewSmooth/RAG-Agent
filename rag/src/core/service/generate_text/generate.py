@@ -1,5 +1,5 @@
-from rag.src.utils.semantic_searcher.generate_text.search import search_in_knowledge_base
-from rag.src.utils.prompts.generate_text.prompt import RAG_PROMPT_TEMPLATE
+from src.utils.semantic_searcher.generate_text.search import search_in_knowledge_base
+from src.utils.prompts.generate_text import RAG_TEXT_PROMPT_TEMPLATE
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
@@ -23,11 +23,11 @@ class GenerateTextService:
         )
         
         # Format context - handle empty results
-        t2t_docs = context["t2t_docs"] if context["t2t_docs"] else ["No relevant t2t_documents found"]
+        t2t_docs = context["docs"] if context["docs"] else ["No relevant t2t_documents found"]
         formatted_context = "\n\n".join(t2t_docs)
         
         # Create prompt
-        prompt = ChatPromptTemplate.from_template(RAG_PROMPT_TEMPLATE)
+        prompt = ChatPromptTemplate.from_template(RAG_TEXT_PROMPT_TEMPLATE)
         
         # Create chain
         rag_chain = (
