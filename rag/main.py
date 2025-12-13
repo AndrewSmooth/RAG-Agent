@@ -1,5 +1,8 @@
 import argparse
 import os
+import asyncio
+import threading
+import time
 
 from src.utils.kb_loader import load_knowledge_base_to_chroma, kb_loader
 from src.utils.clients.embedding_client import get_chroma_client
@@ -7,11 +10,25 @@ import src.core.service.generate_sql.only_semantic as sql_only_semantic
 import src.core.service.generate_sql.hybrid as sql_hybrid
 import src.core.service.generate_sql.hybrid_with_prompting as sql_hybrid_with_prompting
 from src.core.service import GenerateTextService
+from src.core.transport import SQLServer
+
 from langchain_openai import ChatOpenAI
+import psycopg
 
 from config import yandex_api_key, yandex_folder_id
 
-def run_app(query: str = None):
+from fastmcp import Client
+
+async def run_mcp_client():
+    # Connect via stdio to a local script
+    time.sleep(15)
+    async with Client("http://0.0.0.0:8000/mcp") as client:
+        tools = await client.list_tools()
+        print(f"Available tools: {tools}")
+        result = await client.call_tool("generate_sql", {"question": "Покажи мне всех сотрудников с зарплатой больше 100000"})
+        print(f"Result: {result.content[0].text}")
+
+def run_app(query: str = None, run_server: bool = False):
     """Create and configure the application."""
     
     print(yandex_api_key, yandex_folder_id)
@@ -21,7 +38,6 @@ def run_app(query: str = None):
         yandex_api_key=yandex_api_key,
         yandex_folder_id=yandex_folder_id
     )
-    
 
     # Create LLM client
     llm = ChatOpenAI(
@@ -51,10 +67,32 @@ def run_app(query: str = None):
     print(f"\nQuestion: {text_question}")
     print(f"Generated Text: {generated_text}")
 
+
+    if run_server:
+        db_params = {
+            "host": "localhost",
+            "port": 5432,
+            "dbname": "postgres",
+            "user": "postgres",
+            "password": "postgres",
+            "autocommit": True
+        }
+        conn = psycopg.connect(**db_params)
+        srv = SQLServer(generate_sql_service, conn)
+        server_thread = threading.Thread(target=srv.run, daemon=False)
+        server_thread.start()
+
+        # 2. Ждём, пока сервер станет доступен
+        time.sleep(3)  # или retry-логика
+
+        # 3. Запускаем клиента
+        asyncio.run(run_mcp_client())
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--load-kb", action="store_true", help="Load knowledge base to Chroma")
     parser.add_argument("--query", type=str, help="Query to convert to SQL")
+    parser.add_argument("--run-server", action="store_true", help="Run mcp server")
     args = parser.parse_args()
     query = ''
 
@@ -67,7 +105,10 @@ def main():
         )
         query = args.query
     
-    run_app(query)
+    if args.run_server:
+        run_app(None, True)
+    else:
+        run_app(query)
 
 if __name__ == "__main__":
     main()

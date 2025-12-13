@@ -10,3 +10,19 @@ services:
       - CHROMA_SERVER_HTTP_PORT=8000
     volumes:
       - ./chroma_data:/chroma_data
+
+  db:
+    image: postgres
+    container_name: postgres_container
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DATABASE: postgres
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+volumes:
+  postgres_data:
