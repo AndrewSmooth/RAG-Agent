@@ -58,9 +58,9 @@ def recall(truth_sql: str, generated_sql: str, dialect: str = "mysql") -> float:
                 tp_columns += 1  # совпадение по имени: e.salary → salary
 
     # Общее количество эталонных элементов
-    total_truth = len(truth_tables) + len(truth_cols)
+    generated_truth = len(gen_tables) + len(gen_cols)
 
-    recall = (tp_tables + tp_columns) / total_truth if total_truth > 0 else 1.0
+    recall = (tp_tables + tp_columns) / generated_truth if generated_truth > 0 else 1.0
 
     print(f"Эталонные таблицы: {truth_tables}")
     print(f"Извлечённые таблицы: {gen_tables}")

@@ -1,9 +1,12 @@
 import argparse
 import os
 
-from src.utils.kb_loader import load_knowledge_base_to_chroma
+from src.utils.kb_loader import load_knowledge_base_to_chroma, kb_loader
 from src.utils.clients.embedding_client import get_chroma_client
-from src.core.service import GenerateSQLService, GenerateTextService
+import src.core.service.generate_sql.only_semantic as sql_only_semantic
+import src.core.service.generate_sql.hybrid as sql_hybrid
+import src.core.service.generate_sql.hybrid_with_prompting as sql_hybrid_with_prompting
+from src.core.service import GenerateTextService
 from langchain_openai import ChatOpenAI
 
 from config import yandex_api_key, yandex_folder_id
@@ -31,7 +34,8 @@ def run_app(query: str = None):
     # The actual logic is now in setup.py which serves as the main entry point
     # This file can be used for simple demonstrations or testing
     # Create SQL generation service
-    generate_sql_service = GenerateSQLService(chroma_client, embedding_fn, llm)
+    # generate_sql_service = only_semantic.GenerateSQLService(chroma_client, embedding_fn, llm)
+    generate_sql_service = sql_hybrid_with_prompting.GenerateSQLService(chroma_client, embedding_fn, llm, kb_loader)
     user_question = "Show all employees in the Engineering department"
     generated_sql = generate_sql_service.generate(user_question)
     print(f"Question: {user_question}")
