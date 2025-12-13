@@ -11,8 +11,8 @@ def search_in_knowledge_base(
     results_docs = collection_docs.query(query_texts=[query], n_results=k_docs)
     results_sql = collection_sql.query(query_texts=[query], n_results=k_sql)
 
-    print("search_in_knowledge_base")
-    print(results_docs, results_sql)
+    # print("search_in_knowledge_base")
+    # print(results_docs, results_sql)
 
     context = {
         "docs": results_docs["documents"][0] if results_docs["documents"] else [],

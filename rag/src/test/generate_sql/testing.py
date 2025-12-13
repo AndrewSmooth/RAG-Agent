@@ -45,9 +45,17 @@ def load_random_sql_examples(folder_path, num_files=10):
 
     return result
 
+# тесткейсы пока плохие, нужно исправлять
+def load_testing(file_path, num_examples=20):
+    with open(file_path, "r") as file:
+        content = file.read()
+    examples = json.loads(content)
+    return examples
+
 if __name__ == "__main__":
     folder = "knowledge_base/sql_examples"
     examples = load_random_sql_examples(folder, 10)
+    # examples = load_testing("knowledge_base/test/sql.json")
 
     load_dotenv()
     

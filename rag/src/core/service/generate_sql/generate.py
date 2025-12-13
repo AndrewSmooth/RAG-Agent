@@ -26,7 +26,7 @@ class GenerateSQLService:
         all_context = sql_examples + docs
         formatted_context = "\n\n".join(all_context)
 
-        print(formatted_context)
+        # print(formatted_context)
 
         # Create prompt
         prompt = ChatPromptTemplate.from_template(RAG_SQL_PROMPT_TEMPLATE)

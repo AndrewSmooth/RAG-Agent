@@ -1,48 +1,73 @@
-import sqlglot, sqlglot.errors
+import sqlglot
 from sqlglot import parse_one
-from typing import Tuple, List
+from typing import Set, Tuple
 
-def extract_sqls(sql: str) -> Tuple[List[str], List[str]]:
+def extract_tables_and_columns(sql: str, dialect: str = "mysql") -> Tuple[Set[str], Set[str]]:
+    """
+    Возвращает:
+        - Множество таблиц: {'users', 'orders'}
+        - Множество колонок: {'users.id', 'users.name', 'orders.status'}
+    """
 
+    sql = sql.strip().strip('`"\'')
     try:
-        expr = parse_one(sql, dialect="duckdb")
-    except sqlglot.errors.ParseError:
-        print(sql)
-        return ["", ""]
-    tables = list(expr.find_all(sqlglot.exp.Table))
-    columns = list(expr.find_all(sqlglot.exp.Column))
-    return (tables, columns)
+        expr = parse_one(sql, dialect)
+    except Exception as e:
+        print(f"Parse error: {e}")
+        return set(), set()
 
-def recall(truth_sql: str, generated_sql: str) -> float:
+    tables = set()
+    columns = set()
 
-    truth_sqls = extract_sqls(truth_sql)
-    generated_sqls = extract_sqls(generated_sql)
+    # Извлекаем таблицы
+    for table in expr.find_all(sqlglot.exp.Table):
+        table_name = table.name.lower()  # например, 'users'
+        tables.add(table_name)
 
-    tp_tables = 0
-    for table in generated_sqls[0]:
-        if table in truth_sqls[0]:
-            tp_tables += 1
-    
+    # Извлекаем колонки
+    for col in expr.find_all(sqlglot.exp.Column):
+        col_name = col.name.lower()
+        table_name = col.table.lower() if col.table else None
+        if table_name:
+            columns.add(f"{table_name}.{col_name}")
+        else:
+            columns.add(col_name)  # без таблицы
+
+    return tables, columns
+
+
+def recall(truth_sql: str, generated_sql: str, dialect: str = "mysql") -> float:
+    truth_tables, truth_cols = extract_tables_and_columns(truth_sql, dialect)
+    gen_tables, gen_cols = extract_tables_and_columns(generated_sql, dialect)
+
+    # Нормализуем: для сравнения колонок — разрешаем совпадение по имени
+    truth_col_names = {col.split('.')[-1] for col in truth_cols if not col in truth_tables}
+    gen_col_names = {col.split('.')[-1] for col in gen_cols if not col in gen_tables}
+
+    # Таблицы: просто пересечение
+    tp_tables = len(truth_tables & gen_tables)
+
+    # Колонки: либо полное совпадение (table.col), либо по имени
     tp_columns = 0
-    for column in generated_sqls[1]:
-        if column in truth_sqls[1]:
-            tp_columns += 1
-    
-    return (tp_columns + tp_tables) / (len(truth_sqls[0]) + len(truth_sqls[1]))
+    for col in gen_cols:
+        if col in truth_cols:
+            tp_columns += 1  # полное совпадение: e.salary == e.salary
+        else:
+            col_name = col.split('.')[-1]
+            if col_name in truth_col_names and col_name not in gen_tables:
+                tp_columns += 1  # совпадение по имени: e.salary → salary
 
-if __name__ == "__main__":
-    truth = """
-    SELECT users.name, users.age, orders.total 
-    FROM users 
-    JOIN orders ON users.id = orders.user_id 
-    WHERE users.city = 'Moscow' AND orders.status = 'shipped'        
-    """
-    generated = """
-    SELECT users.name, users.age, orders.total 
-    FROM users 
-    JOIN orders ON users.id = orders.user_id 
-    WHERE users.city_1 = 'Moscow' AND orders.status = 'shipped' AND users.status = 'canceled'   
-    """
-    print(extract_sqls(truth))
+    # Общее количество эталонных элементов
+    total_truth = len(truth_tables) + len(truth_cols)
 
-    print(recall(truth, generated))
+    recall = (tp_tables + tp_columns) / total_truth if total_truth > 0 else 1.0
+
+    print(f"Эталонные таблицы: {truth_tables}")
+    print(f"Извлечённые таблицы: {gen_tables}")
+    print(f"Совпавшие таблицы: {truth_tables & gen_tables}")
+
+    print(f"Эталонные колонки: {truth_cols}")
+    print(f"Извлечённые колонки: {gen_cols}")
+    print(f"Совпавшие колонки (частично): {tp_columns}")
+
+    return recall
