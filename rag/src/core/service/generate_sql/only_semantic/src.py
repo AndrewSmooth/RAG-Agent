@@ -5,7 +5,6 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda
 
-
 class GenerateSQLService:
 
     def __init__(self, chroma_client, embedding_fn, llm_client):

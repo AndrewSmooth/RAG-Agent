@@ -1,2 +1,2 @@
-from .generate_sql.generate import GenerateSQLService
+from .generate_sql import GenerateSQLService
 from .generate_text.generate import GenerateTextService
