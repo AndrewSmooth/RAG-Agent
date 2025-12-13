@@ -1,0 +1,4 @@
+{
+  "question": "Найди всех сотрудников, завершивших обучение по программе 'Leadership Development' в текущем году, с оценкой выше 80%",
+  "sql": "SELECT e.first_name, e.last_name, et.completion_date, et.grade, pr.name as program_name FROM employee_training et JOIN employees e ON et.employee_id = e.id JOIN training_program pr ON et.program_id = pr.id WHERE pr.name = 'Leadership Development' AND et.enrollment_status = 'completed' AND et.grade >= 80 AND YEAR(et.completion_date) = YEAR(CURDATE()) ORDER BY et.completion_date DESC;"
+}

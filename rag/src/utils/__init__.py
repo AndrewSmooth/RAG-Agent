@@ -1,1 +1,3 @@
 from .clients import YandexEmbeddingFunction, get_chroma_client
+from .prompts.generate_sql import RAG_SQL_PROMPT_TEMPLATE
+from .prompts.generate_text import RAG_TEXT_PROMPT_TEMPLATE

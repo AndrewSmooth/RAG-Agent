@@ -28,12 +28,13 @@ class KnowledgeBaseLoader:
                 filepath = os.path.join(docs_dir, filename)
                 with open(filepath, "r", encoding="utf-8") as f:
                     content = f.read()
-                docs.append(
-                    Document(
-                        page_content=content,
-                        metadata={"source": filename, "type": "doc"}
+                if content != "":
+                    docs.append(
+                        Document(
+                            page_content=content,
+                            metadata={"source": filename, "type": "doc"}
+                        )
                     )
-                )
         return docs
 
     def load_t2t_docs(self, file: Any = None, filename: str = None) -> List[Document]:
@@ -81,6 +82,7 @@ class KnowledgeBaseLoader:
                 filepath = os.path.join(sql_dir, filename)
                 with open(filepath, "r", encoding="utf-8") as f:
                     data = json.load(f)
+                
                 examples.append(
                     Document(
                         page_content=f"Question: {data['question']}\nSQL: {data['sql']}",

@@ -1,0 +1,26 @@
+# Table: downtime_reason
+## Columns
+- `id`: уникальный идентификатор причины простоя (первичный ключ)
+- `code`: код причины простоя (уникальный)
+- `name`: наименование причины простоя
+- `description`: подробное описание причины
+- `category`: категория простоя (equipment_failure, material_shortage, quality_issue, maintenance, changeover, personnel, other)
+- `severity_level`: уровень серьезности (1-5, где 5 - наиболее серьезный)
+- `typical_duration_minutes`: типичная продолжительность простоя в минутах
+- `frequency_rate`: частота возникновения (low, medium, high)
+- `impact_on_production`: влияние на производство (low, medium, high, critical)
+- `preventable`: можно ли предотвратить данную причину (true/false)
+- `recommended_actions`: рекомендуемые действия по предотвращению (в формате JSON)
+- `related_equipment_types`: типы оборудования, подверженные данной причине (в формате JSON)
+- `detection_method`: метод обнаружения причины
+- `resolution_time_target_minutes`: целевое время устранения в минутах
+- `cost_per_hour`: стоимость простоя в час
+- `cost_currency`: валюта стоимости
+- `last_occurrence_date`: дата последнего возникновения
+- `occurrence_count_year`: количество возникновений за последний год
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

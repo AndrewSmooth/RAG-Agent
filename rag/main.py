@@ -1,9 +1,9 @@
 import argparse
 import os
-from dotenv import load_dotenv
 
 from src.utils.kb_loader import load_knowledge_base_to_chroma
 from src.utils.clients.embedding_client import get_chroma_client
+from src.core.service import GenerateSQLService, GenerateTextService
 from langchain_openai import ChatOpenAI
 
 from config import yandex_api_key, yandex_folder_id
@@ -11,9 +11,7 @@ from config import yandex_api_key, yandex_folder_id
 def run_app(query: str = None):
     """Create and configure the application."""
     
-    load_dotenv()
-    
-    # Get environment variables
+    print(yandex_api_key, yandex_folder_id)
     
     # Create chroma client and embedding function
     chroma_client, embedding_fn = get_chroma_client(
@@ -21,6 +19,7 @@ def run_app(query: str = None):
         yandex_folder_id=yandex_folder_id
     )
     
+
     # Create LLM client
     llm = ChatOpenAI(
         api_key=yandex_api_key,

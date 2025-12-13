@@ -1,0 +1,4 @@
+{
+  "question": "Оцени производительность рабочих центров по выполнению нарядов-заказов и качеству продукции",
+  "sql": "SELECT wc.name as work_center, COUNT(wo.id) as total_work_orders, COUNT(CASE WHEN wo.status = 'completed' THEN 1 END) as completed_orders, ROUND(COUNT(CASE WHEN wo.status = 'completed' THEN 1 END) * 100.0 / COUNT(*), 2) as completion_rate, AVG(wo.actual_duration_hours / wo.planned_duration_hours) as efficiency_ratio, AVG(wo.actual_labor_hours) as avg_labor_hours, COUNT(CASE WHEN wo.rework_required = true THEN 1 END) as rework_count, ROUND(COUNT(CASE WHEN wo.quality_checks_passed = true THEN 1 END) * 100.0 / COUNT(*), 2) as quality_pass_rate FROM work_centers wc JOIN work_orders wo ON wc.id = wo.work_center_id WHERE wo.planned_start_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) GROUP BY wc.id, wc.name ORDER BY completion_rate DESC, quality_pass_rate DESC;"
+}

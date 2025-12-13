@@ -1,0 +1,4 @@
+{
+  "question": "Определи влияние нехватки материалов на производственные заказы",
+  "sql": "SELECT po.order_number, p.name as product_name, po.planned_start_date, po.status, bc.material_name, i.current_stock, i.reorder_point, (i.reorder_point - i.current_stock) as shortage_quantity, po.planned_quantity * bc.quantity_per_unit as required_quantity, CASE WHEN i.current_stock < (po.planned_quantity * bc.quantity_per_unit) THEN 'Critical' ELSE 'Normal' END as shortage_status FROM production_orders po JOIN products p ON po.product_id = p.id JOIN boms b ON p.id = b.product_id JOIN bom_components bc ON b.id = bc.bom_id JOIN inventory i ON bc.material_id = i.material_id WHERE po.status IN ('planned', 'released') AND po.planned_start_date >= CURDATE() AND i.current_stock < bc.quantity_per_unit * po.planned_quantity ORDER BY shortage_status DESC, po.planned_start_date ASC;"
+}

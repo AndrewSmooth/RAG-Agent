@@ -1,0 +1,4 @@
+{
+  "question": "Проанализируй стоимость спецификаций материалов по компонентам и выяви основные статьи затрат",
+  "sql": "SELECT b.product_id, p.name as product_name, bc.component_type, m.name as material_name, bc.quantity_per_unit, bc.unit_of_measure, bc.cost_per_unit, bc.cost_currency, (bc.quantity_per_unit * bc.cost_per_unit) as total_component_cost, ROUND((bc.quantity_per_unit * bc.cost_per_unit) / SUM(bc.quantity_per_unit * bc.cost_per_unit) OVER (PARTITION BY b.id) * 100, 2) as cost_percentage FROM boms b JOIN bom_components bc ON b.id = bc.bom_id JOIN materials m ON bc.material_id = m.id JOIN products p ON b.product_id = p.id WHERE b.status = 'active' AND bc.is_active = true ORDER BY b.product_id, total_component_cost DESC;"
+}

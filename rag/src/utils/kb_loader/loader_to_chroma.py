@@ -16,6 +16,8 @@ def load_knowledge_base_to_chroma(
     docs = loader.load_docs()
     sql_examples = loader.load_sql_examples()
 
+    docs = loader.load_docs()
+
     # 2. Подключение к Chroma
     chroma_client, embedding_fn = get_chroma_client(
         chroma_url=chroma_url,
@@ -30,6 +32,7 @@ def load_knowledge_base_to_chroma(
         name="docs",
         embedding_function=embedding_fn
     )
+
 
     collection_docs.add(
         ids=[f"doc_{i}" for i in range(len(docs))],
@@ -48,25 +51,6 @@ def load_knowledge_base_to_chroma(
         documents=[doc.page_content for doc in sql_examples],
         metadatas=[doc.metadata for doc in sql_examples]
     )
-
-
-    # Коллекция t2t_docs
-    # chroma_client.delete_collection("t2t_docs") - очистка перед добавлением
-    collection_t2t_docs = chroma_client.get_or_create_collection(
-        name="t2t_docs",
-        embedding_function=embedding_fn
-    )
-
-    test_documents = [doc.page_content for doc in t2t_docs]
-    test_docs = [doc.metadata for doc in t2t_docs]
-
-
-    collection_t2t_docs.add(
-        ids=[f"t2t_doc_{i}" for i in range(len(t2t_docs))],
-        documents=test_documents,
-        metadatas=test_docs
-    )
-    collection_t2t_docs.get()
 
     print("✅ База знаний загружена в удалённый Chroma")
 

@@ -1,4 +1,4 @@
-RAG_PROMPT_TEMPLATE = """
+RAG_SQL_PROMPT_TEMPLATE = """
 You are an expert in converting natural language questions into SQL queries.
 Use the following examples to guide your response.
 

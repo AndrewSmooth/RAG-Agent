@@ -1,0 +1,4 @@
+{
+  "question": "Покажи статус всех производственных заказов с детализацией по плановым и фактическим показателям",
+  "sql": "SELECT po.order_number, p.name as product, po.planned_start_date, po.planned_end_date, po.actual_start_date, po.actual_end_date, po.planned_quantity, po.produced_quantity, po.scrap_quantity, ROUND((po.produced_quantity / po.planned_quantity) * 100, 2) as yield_rate, po.status, DATEDIFF(COALESCE(po.actual_end_date, CURDATE()), po.planned_end_date) as schedule_variance_days, pl.name as plant FROM production_orders po JOIN products p ON po.product_id = p.id JOIN plants pl ON po.plant_id = pl.id WHERE po.planned_start_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) ORDER BY po.planned_start_date DESC;"
+}

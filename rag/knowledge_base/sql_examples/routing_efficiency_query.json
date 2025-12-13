@@ -1,0 +1,4 @@
+{
+  "question": "Оцени эффективность маршрутов производства по времени выполнения и количеству переделок",
+  "sql": "SELECT r.product_id, p.name as product_name, r.version, COUNT(wo.id) as total_operations, SUM(wo.planned_duration_hours) as planned_total_time, SUM(wo.actual_duration_hours) as actual_total_time, ROUND(SUM(wo.actual_duration_hours) / SUM(wo.planned_duration_hours) * 100, 2) as time_efficiency_percent, COUNT(CASE WHEN wo.rework_required = true THEN 1 END) as rework_count, ROUND(COUNT(CASE WHEN wo.rework_required = true THEN 1 END) * 100.0 / COUNT(*), 2) as rework_rate_percent FROM routings r JOIN routing_operations ro ON r.id = ro.routing_id JOIN work_orders wo ON ro.operation_id = wo.operation_id JOIN products p ON r.product_id = p.id WHERE r.status = 'active' AND wo.actual_start_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) GROUP BY r.id, r.product_id, p.name, r.version ORDER BY time_efficiency_percent ASC, rework_rate_percent DESC;"
+}

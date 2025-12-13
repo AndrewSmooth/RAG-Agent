@@ -1,0 +1,102 @@
+[
+  {
+    "question": "Покажи всех активных сотрудников",
+    "sql": "SELECT id, first_name, last_name, email, department_id, grade, salary_grade, hire_date FROM employees WHERE is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников с зарплатой выше 100000",
+    "sql": "SELECT id, first_name, last_name, salary, department_id, salary_grade FROM employees WHERE salary > 100000 AND is_active = true;"
+  },
+  {
+    "question": "Покажи список всех департаментов",
+    "sql": "SELECT id, name, manager_id, location FROM departments;"
+  },
+  {
+    "question": "Покажи всех сотрудников из отдела продаж",
+    "sql": "SELECT id, first_name, last_name, email, salary_grade, salary FROM employees WHERE department_id = (SELECT id FROM departments WHERE name = 'Sales') AND is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников с грейдом D1",
+    "sql": "SELECT id, first_name, last_name, salary, hire_date, department_id FROM employees WHERE salary_grade = 'D1' AND is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, нанятых в этом году",
+    "sql": "SELECT id, first_name, last_name, hire_date, department_id, salary_grade FROM employees WHERE YEAR(hire_date) = YEAR(CURDATE()) AND is_active = true;"
+  },
+  {
+    "question": "Покажи список всех материалов",
+    "sql": "SELECT id, name, material_type, unit_of_measure, price_per_unit, currency FROM materials;"
+  },
+  {
+    "question": "Покажи все активные спецификации (BOM)",
+    "sql": "SELECT id, product_id, version, status, created_at, created_by FROM boms WHERE status = 'active';"
+  },
+  {
+    "question": "Покажи все компоненты для спецификации с ID 5",
+    "sql": "SELECT material_id, component_type, quantity_per_unit, unit_of_measure, cost_per_unit, cost_currency FROM bom_components WHERE bom_id = 5 AND is_active = true;"
+  },
+  {
+    "question": "Покажи все продукты",
+    "sql": "SELECT id, name, category, department, unit_weight, created_at FROM products;"
+  },
+  {
+    "question": "Покажи продукт с артикулом PROD-001",
+    "sql": "SELECT id, name, category, department, unit_weight FROM products WHERE id = 'PROD-001';"
+  },
+  {
+    "question": "Покажи все программы обучения",
+    "sql": "SELECT id, name, duration_days, is_mandatory, description FROM training_program;"
+  },
+  {
+    "question": "Покажи всех сотрудников, прошедших обучение по 'Safety Training'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, e.department_id, et.completion_date, et.grade FROM employees e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Safety Training' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи текущую структуру окладов",
+    "sql": "SELECT grade, step, base_salary, currency, effective_date FROM salary_structure WHERE effective_date <= CURDATE() AND (expiration_date IS NULL OR expiration_date >= CURDATE());"
+  },
+  {
+    "question": "Покажи всех сотрудников без указанных данных о грейде",
+    "sql": "SELECT id, first_name, last_name, salary, department_id, hire_date FROM employees WHERE salary_grade IS NULL AND is_active = true;"
+  },
+  {
+    "question": "Покажи все завершённые курсы обучения за текущий месяц",
+    "sql": "SELECT employee_id, program_id, enrollment_date, completion_date, grade FROM employee_training WHERE enrollment_status = 'completed' AND MONTH(completion_date) = MONTH(CURDATE()) AND YEAR(completion_date) = YEAR(CURDATE());"
+  },
+  {
+    "question": "Покажи материалы в рублях",
+    "sql": "SELECT id, name, price_per_unit, unit_of_measure FROM materials WHERE currency = 'RUB';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у кого зарплата ниже 80000",
+    "sql": "SELECT id, first_name, last_name, salary, department_id, salary_grade FROM employees WHERE salary < 80000 AND is_active = true;"
+  },
+  {
+    "question": "Покажи все обязательные программы обучения",
+    "sql": "SELECT id, name, duration_days, description FROM training_program WHERE is_mandatory = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, работающих в Москве",
+    "sql": "SELECT id, first_name, last_name, email, department_id, salary_grade, salary FROM employees WHERE location = 'Moscow' AND is_active = true;"
+  },
+  {
+    "question": "Покажи все компоненты типа 'metal'",
+    "sql": "SELECT bom_id, material_id, quantity_per_unit, cost_per_unit FROM bom_components WHERE component_type = 'metal' AND is_active = true;"
+  },
+  {
+    "question": "Покажи среднюю зарплату по компании",
+    "sql": "SELECT ROUND(AVG(salary), 2) as avg_salary FROM employees WHERE is_active = true;"
+  },
+  {
+    "question": "Покажи количество сотрудников в компании",
+    "sql": "SELECT COUNT(*) as employee_count FROM employees WHERE is_active = true;"
+  },
+  {
+    "question": "Покажи самый дорогой материал",
+    "sql": "SELECT id, name, price_per_unit, currency FROM materials ORDER BY price_per_unit DESC LIMIT 1;"
+  },
+  {
+    "question": "Покажи всех сотрудников с фамилией Иванов",
+    "sql": "SELECT id, first_name, last_name, email, department_id, salary, salary_grade FROM employees WHERE last_name = 'Иванов' AND is_active = true;"
+  }
+]
