@@ -12,11 +12,9 @@ def load_knowledge_base_to_chroma(
 ):
     # 1. Загрузка файлов
     loader = KnowledgeBaseLoader(kb_path, chroma_url, yandex_api_key, yandex_folder_id)
-    t2t_docs = loader.load_t2t_docs()
-    docs = loader.load_docs()
+    t2t_docs = loader.load_docs()
+    docs = loader.load_docs(docs_type='doc', docs_dir='docs')
     sql_examples = loader.load_sql_examples()
-
-    docs = loader.load_docs()
 
     # 2. Подключение к Chroma
     chroma_client, embedding_fn = get_chroma_client(
