@@ -1,10 +1,15 @@
 import os
 import json
 from typing import List, Dict, Any
+from pathlib import Path
+
 from langchain_core.documents import Document
 import hashlib
+import fitz
+from docx import Document as DocxDocument
 
-from ..clients import get_chroma_client
+from src.utils.clients import get_chroma_client
+from src.constants import DOCS_COLLECTION_NAME, SQL_EXAMPLES_COLLECTION_NAME, T2T_DOCS_COLLECTION_NAME
 
 class KnowledgeBaseLoader:
     def __init__(
@@ -18,82 +23,95 @@ class KnowledgeBaseLoader:
         self.chroma_url = chroma_url,
         self.yandex_api_key = yandex_api_key,
         self.yandex_folder_id = yandex_folder_id,
+        self.chroma_client, self.embedding_fn = get_chroma_client(
+            yandex_api_key=yandex_api_key,
+            yandex_folder_id=yandex_folder_id
+        )
+        self._init_collections()
 
-
-    def load_docs(self) -> List[Document]:
-        docs_dir = os.path.join(self.kb_path, "docs")
-        docs = []
-        for filename in os.listdir(docs_dir):
-            if filename.endswith(".md"):
-                filepath = os.path.join(docs_dir, filename)
-                with open(filepath, "r", encoding="utf-8") as f:
-                    content = f.read()
-                if content != "":
-                    docs.append(
-                        Document(
-                            page_content=content,
-                            metadata={"source": filename, "type": "doc"}
-                        )
-                    )
-        return docs
-
-    def load_t2t_docs(self, file: Any = None, filename: str = None) -> List[Document]:
-        t2t_docs = []
-
-        def append_doc(file_content: Any, file_name: str) -> None:
-            t2t_docs.append(
-                Document(
-                    page_content=file_content,
-                    metadata={
-                        "source": file_name,
-                        "type": "t2t_doc"
-                    }
-                )
-            )
-            print(f"✅ Загружен: {filename}")
+    def load_sql_examples(self, file: Any = None, filename: str = None) -> List[Document]:
+        examples = []
 
         if file:
-            append_doc(file, filename)
+            document = self.get_document(file, filename, 'sql_example')
+            examples.append(document)
         else:
-            t2t_docs_dir = os.path.join(self.kb_path, "t2t_docs")
+            sql_dir = os.path.join(self.kb_path, SQL_EXAMPLES_COLLECTION_NAME)
 
-            for filename in os.listdir(t2t_docs_dir):
-                filepath = os.path.join(t2t_docs_dir, filename)
+            for filename in os.listdir(sql_dir):
+                if filename.endswith(".json"):
+                    filepath = os.path.join(sql_dir, filename)
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        data = json.load(f)
 
-                if not (filename.lower().endswith(".txt") or filename.lower().endswith(".md")):
+                    examples.append(
+                        Document(
+                            page_content=f"Question: {data['question']}\nSQL: {data['sql']}",
+                            metadata={
+                                "source": filename,
+                                "type": "sql_example",
+                                "question": data["question"]
+                            }
+                        )
+                    )
+        return examples
+
+    def load_docs(
+            self,
+            file: Any = None,
+            filename: str = None,
+            docs_type: str = T2T_DOCS_COLLECTION_NAME,
+            docs_dir: str = T2T_DOCS_COLLECTION_NAME
+    ) -> List[Document]:
+        """Загружает документы в зависимости от параметров в docs или t2t_docs"""
+
+        docs = []
+
+        if file is not None:
+            if not isinstance(file, bytes):
+                raise TypeError("`file` must be bytes (result of UploadFile.read())")
+
+            ext = Path(filename).suffix.lower()
+            content_str = self._read_text_from_bytes(file, ext)
+
+            if content_str.strip():
+                document = Document(
+                    page_content=content_str,
+                    metadata={"source": filename, "type": docs_type}
+                )
+                docs.append(document)
+
+        else:
+            # Загрузка из директории
+            docs_dir = os.path.join(self.kb_path, docs_dir)
+            if not os.path.exists(docs_dir):
+                return docs
+
+            for fname in os.listdir(docs_dir):
+                fpath = os.path.join(docs_dir, fname)
+                if not os.path.isfile(fpath):
+                    continue
+
+                ext = Path(fname).suffix.lower()
+                if ext not in {".txt", ".md", ".pdf", ".docx"}:
                     continue
 
                 try:
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        content = f.read().strip()
-                        append_doc(content, filename)
+                    with open(fpath, "rb") as f:  # читаем как байты для единообразия
+                        raw = f.read()
+                    content_str = self._read_text_from_bytes(raw, ext)
 
+                    if content_str.strip():
+                        document = Document(
+                            page_content=content_str,
+                            metadata={"source": fname, "type": docs_type}
+                        )
+                        docs.append(document)
                 except Exception as e:
-                    print(f"❌ Ошибка чтения {filename}: {e}")
+                    print(f"❌ Ошибка чтения {fname}: {e}")
                     continue
 
-        return t2t_docs
-
-    def load_sql_examples(self) -> List[Document]:
-        sql_dir = os.path.join(self.kb_path, "sql_examples")
-        examples = []
-        for filename in os.listdir(sql_dir):
-            if filename.endswith(".json"):
-                filepath = os.path.join(sql_dir, filename)
-                with open(filepath, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                
-                examples.append(
-                    Document(
-                        page_content=f"Question: {data['question']}\nSQL: {data['sql']}",
-                        metadata={
-                            "source": filename,
-                            "type": "sql_example",
-                            "question": data["question"]
-                        }
-                    )
-                )
-        return examples
+        return docs
 
     def load_file(
             self,
@@ -107,36 +125,31 @@ class KnowledgeBaseLoader:
         doc = []
         filename = file_name
 
-        if doc_type == 't2t_docs':
-            doc = self.load_t2t_docs(file, filename)
-        # elif doc_type == 'docs':
-        #     doc = self.load_docs(file=file)
-        # elif doc_type == 'sql_examples':
-        #     doc = self.load_sql_examples(file=file)
-
-        if not doc:
+        if doc_type == DOCS_COLLECTION_NAME:
+            doc = self.load_docs(file, filename, docs_type='doc', docs_dir='docs')
+        elif doc_type == SQL_EXAMPLES_COLLECTION_NAME:
+            doc = self.load_sql_examples(file, filename)
+        elif doc_type == T2T_DOCS_COLLECTION_NAME:
+            doc = self.load_docs(file, filename)
+        else:
             return {'error': f'Указан недопустимый тип документа: {doc_type}'}
 
-        chroma_client, embedding_fn = get_chroma_client(
-            yandex_api_key=self.yandex_api_key,
-            yandex_folder_id=self.yandex_folder_id
-        )
-
-        chroma_collection = chroma_client.get_or_create_collection(
-            name=doc_type,
-            embedding_function=embedding_fn
-        )
-
         doc_id = f'{doc_type}_{self.hash_filename(filename)}'
+        doc_text = doc[0].page_content
+
+        chroma_collection = self.chroma_client.get_collection(doc_type)
         existing = chroma_collection.get(ids=[doc_id])
+
+        embedding = self.embedding_fn(doc_text).tolist()
 
         if existing['ids']:
             print(f"⚠️ Документ с ID '{doc_id}' уже существует. Пропускаем.")
         else:
             chroma_collection.add(
                 ids=[doc_id],
-                documents=[doc[0]['page_content']],
-                metadatas=[doc[0]['metadata']],
+                documents=[doc_text],
+                metadatas=[doc[0].metadata],
+                embeddings=[embedding], # явно добавляем. чтобы не было багов
             )
             print(f"✅ Добавлен новый документ: {doc_id}")
 
@@ -145,3 +158,42 @@ class KnowledgeBaseLoader:
     @staticmethod
     def hash_filename(filename: str, length: int = 16) -> str:
         return hashlib.sha256(filename.encode()).hexdigest()[:length]
+
+    @staticmethod
+    def get_document(file_content: Any, file_name: str, doc_type: str,) -> Document:
+        document = Document(
+            page_content=file_content,
+            metadata={
+                "source": file_name,
+                "type": doc_type,
+            }
+        )
+        return document
+
+    def _init_collections(self):
+        collections_names = [
+            DOCS_COLLECTION_NAME,
+            SQL_EXAMPLES_COLLECTION_NAME,
+            T2T_DOCS_COLLECTION_NAME
+        ]
+
+        for collection_name in collections_names:
+            self.chroma_client.get_or_create_collection(name=collection_name)
+
+    @staticmethod
+    def _read_text_from_bytes(content: bytes, ext: str) -> str:
+        """Читает текст из байтов в зависимости от расширения."""
+        try:
+            if ext == ".pdf":
+                with fitz.open(stream=content, filetype="pdf") as doc:
+                    return "".join(page.get_text() for page in doc)
+            elif ext == ".docx":
+                from io import BytesIO
+                doc = DocxDocument(BytesIO(content))
+                return "\n".join(para.text for para in doc.paragraphs)
+            else:
+                # .txt, .md и прочие текстовые — декодируем как UTF-8
+                return content.decode("utf-8")
+        except UnicodeDecodeError:
+            # Попытка с игнорированием ошибок для текстовых файлов
+            return content.decode("utf-8", errors="replace")

@@ -25,7 +25,7 @@ class BM25IndexBuilder:
 
         # Загружаем все типы документов
         doc_type_map = [
-            ("doc", self.kb_loader.load_docs),
+            ("doc", self.kb_loader.load_docs(docs_type='doc', docs_dir='docs')),
             ("sql_example", self.kb_loader.load_sql_examples)
         ]
 
