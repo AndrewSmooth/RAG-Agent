@@ -10,8 +10,7 @@ import src.core.service.generate_sql.only_semantic as sql_only_semantic
 import src.core.service.generate_sql.hybrid as sql_hybrid
 import src.core.service.generate_sql.hybrid_with_prompting as sql_hybrid_with_prompting
 from src.core.service import GenerateTextService
-from src.core.transport import SQLServer
-
+from src.core.transport.agents.mcp_server import run_mcp_server
 from langchain_openai import ChatOpenAI
 import psycopg
 
@@ -22,7 +21,7 @@ from fastmcp import Client
 async def run_mcp_client():
     # Connect via stdio to a local script
     time.sleep(15)
-    async with Client("http://0.0.0.0:8000/mcp") as client:
+    async with Client("http://0.0.0.0:8008/mcp") as client:
         tools = await client.list_tools()
         print(f"Available tools: {tools}")
         result = await client.call_tool("generate_sql", {"question": "Покажи мне всех сотрудников с зарплатой больше 100000"})
@@ -71,15 +70,14 @@ def run_app(query: str = None, run_server: bool = False):
     if run_server:
         db_params = {
             "host": "localhost",
-            "port": 5432,
+            "port": 5433,
             "dbname": "postgres",
             "user": "postgres",
             "password": "postgres",
             "autocommit": True
         }
         conn = psycopg.connect(**db_params)
-        srv = SQLServer(generate_sql_service, conn)
-        server_thread = threading.Thread(target=srv.run, daemon=False)
+        server_thread = threading.Thread(target=run_mcp_server, args=(generate_sql_service, conn), daemon=False)
         server_thread.start()
 
         # 2. Ждём, пока сервер станет доступен
