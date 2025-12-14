@@ -16,8 +16,6 @@ from react_agent.state import InputState, State
 from react_agent.tools import TOOLS
 from react_agent.utils import load_chat_model
 
-from aegra.rag.src.core.service import generate_answer
-
 # Define the function that calls the model
 
 
@@ -56,10 +54,11 @@ async def call_model(
 
     if user_text:
         if 't2t' in user_text:
-            # from aegra.rag.src.core.service import get_answer_from_rag
-            answer = generate_answer(f'Контекст: {system_message}\n' + user_text)
-            response = AIMessage(content=answer)
-        #TODO: similarly make for t2sql
+            pass
+            #     # from aegra.rag.src.core.service import get_answer_from_rag
+            #     answer = generate_answer(f'Контекст: {system_message}\n' + user_text)
+            #     response = AIMessage(content=answer)
+            # #TODO: similarly make for t2sql
     else:
         # Get the model's response
         response = cast(

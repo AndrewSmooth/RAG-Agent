@@ -1,1 +1,0 @@
-# generate_sql prompts initialization

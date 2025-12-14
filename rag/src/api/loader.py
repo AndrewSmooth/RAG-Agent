@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from docx import Document as DocxDocument
 import fitz
 
@@ -11,6 +12,18 @@ from src.utils.kb_loader import kb_loader
 
 app = FastAPI()
 chroma_client, embedding_fn = kb_loader.chroma_client, kb_loader.embedding_fn
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",   # твой фронтенд (React, Vite и т.д.)
+        "http://127.0.0.1:3000",
+        # Добавь другие origins, если нужно (например, прод-домен)
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],  # или ["POST", "GET"] — но для загрузки файлов нужен POST
+    allow_headers=["*"],  # особенно важно для multipart/form-data
+)
 
 # Базовая директория для загрузок (лучше вынести в .env)
 BASE_DIR = Path(__file__).parents[2] # /rag - на 2 уровня выше

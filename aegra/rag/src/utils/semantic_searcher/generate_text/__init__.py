@@ -1,1 +1,0 @@
-# generate_text semantic searcher initialization

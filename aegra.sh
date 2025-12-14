@@ -10,7 +10,8 @@ source .venv/bin/activate
 
 # запуск через docker
 docker compose up postgres -d  # только БД
-docker compose up aegra        # сервис с миграциями
+# docker compose up aegra        # сервис с миграциями
+python run_server.py # локальный запуск
 
 # проверка
 curl http://localhost:8000/health
