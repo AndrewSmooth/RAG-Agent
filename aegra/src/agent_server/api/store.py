@@ -20,8 +20,6 @@ from ..models import (
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from rag import kb_loader
-
 router = APIRouter()
 
 
@@ -150,39 +148,3 @@ async def search_store_items(
         limit=request.limit or 20,
         offset=request.offset or 0,
     )
-
-@router.post("/store/vector")
-async def add_doc_to_vec_store(file: UploadFile, doc_type: str = 't2t_docs'):
-    """
-        Params: file (UploadFile), doc_type (str)
-        doc_types: 't2t_docs', 'docs', 'sql_examples'
-    """
-    content_bytes = await file.read()
-    contents = content_bytes.decode('utf-8')
-
-    args = [contents, file.filename, doc_type]
-    print('LOG')
-    print(len(args), args)
-    res = kb_loader.load_file(file=contents, filename=file.filename, doc_type=doc_type)
-
-    if not res:
-        return {'status': 'undefined error'}
-    if error := res.get('error'):
-        return {'error': error}
-
-    return {"status": "ok"}
-
-
-def apply_user_namespace_scoping(user_id: str, namespace: list[str]) -> list[str]:
-    """Apply user-based namespace scoping for data isolation"""
-
-    if not namespace:
-        # Default to user's private namespace
-        return ["users", user_id]
-
-    # Allow explicit user namespaces
-    if namespace[0] == "users" and len(namespace) >= 2 and namespace[1] == user_id:
-        return namespace
-
-    # For development, allow all namespaces (remove this for production)
-    return namespace

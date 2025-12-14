@@ -145,46 +145,69 @@ export function Thread() {
   const lastError = useRef<string | undefined>(undefined);
 
   // --- НАЧАЛО ВСТАВКИ ---
-const handleTxtMdUpload = async () => {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = ".txt,.md"; // только txt и md
-  input.onchange = async (e: any) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
+    const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
 
-    // Дополнительная проверка по расширению (на всякий случай)
-    const allowedExtensions = [".txt", ".md"];
-    const fileExtension = file.name.toLowerCase().split(".").pop();
-    if (!fileExtension || !allowedExtensions.includes(`.${fileExtension}`)) {
-      toast.error("Only .txt and .md files are allowed.");
-      return;
-    }
+    const handleFilesUpload = () => {
+      // Сначала открываем выбор коллекции
+      setIsCollectionModalOpen(true);
+    };
 
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      // 👇 Укажите вашу ручку. Если она не /upload/ — замените!
-      const res = await fetch("http://localhost:8000/store/vector?doc_type=t2t_docs", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (res.ok) {
-        toast.success("File sent successfully!");
-      } else {
-        toast.error("Upload failed. Check backend logs.");
-        console.error("Backend error:", await res.text());
+    const handleCollectionSelect = (collection: string | null) => {
+      setIsCollectionModalOpen(false);
+      if (!collection) {
+        toast.error('Загрузка отменена');
+        return;
       }
-    } catch (err) {
-      console.error("Network error:", err);
-      toast.error("Could not connect to backend (is it running on port 8000?)");
-    }
-  };
-  input.click();
-};
-// --- КОНЕЦ ВСТАВКИ ---
+
+      setSelectedCollection(collection);
+
+      // Теперь запускаем выбор файлов
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.multiple = true;
+      fileInput.accept = '.txt,.md,.pdf,.docx,.sql';
+
+      fileInput.onchange = async (e: any) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) {
+          setSelectedCollection(null);
+          return;
+        }
+
+        await uploadFilesToBackend(collection, files);
+        setSelectedCollection(null);
+      };
+
+      fileInput.click();
+    };
+
+    const uploadFilesToBackend = async (collection: string, files: FileList) => {
+      const formData = new FormData();
+      formData.append('folder', collection);
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+      }
+
+      try {
+        const res = await fetch('http://localhost:8800/upload/', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          toast.success(`✅ Загружено ${data.files.length} файл(ов) в "${data.folder}"`);
+        } else {
+          const errorText = await res.text();
+          console.error('Backend error:', errorText);
+          toast.error(`❌ Ошибка: ${res.status}`);
+        }
+      } catch (err) {
+        console.error('Network error:', err);
+        toast.error('Не удаётся подключиться к бэкенду (порт 8800)');
+      }
+    };
 
   const setThreadId = (id: string | null) => {
     _setThreadId(id);
@@ -562,11 +585,12 @@ const handleTxtMdUpload = async () => {
                               href="#"
                               onClick={(e) => {
                                 e.preventDefault();
-                                handleTxtMdUpload();
+                                handleFilesUpload();
                               }}
-                              className="mt-2 flex cursor-pointer items-center gap-2 text-sm boldtext-gray-600 hover:underline"
+
+                              className="mt-2 mb-3 flex cursor-pointer items-center gap-2 text-sm boldtext-gray-600 hover:underline"
                             >
-                              📄 Upload file to KB
+                              📄 Upload files to KB
                             </a>
                         {stream.isLoading ? (
                           <Button
@@ -613,6 +637,46 @@ const handleTxtMdUpload = async () => {
           </div>
         </div>
       </div>
+        {/* Модальное окно выбора коллекции */}
+        {isCollectionModalOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+            onClick={() => setIsCollectionModalOpen(false)}
+          >
+            <div
+              className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="mb-4 text-lg font-semibold">Выберите коллекцию для загрузки</h3>
+              <div className="flex flex-col gap-3">
+                <button
+                  className="flex items-center gap-2 rounded-md border p-3 text-left hover:bg-gray-50"
+                  onClick={() => handleCollectionSelect('t2t_docs')}
+                >
+                  📄 t2t_docs
+                </button>
+                <button
+                  className="flex items-center gap-2 rounded-md border p-3 text-left hover:bg-gray-50"
+                  onClick={() => handleCollectionSelect('docs')}
+                >
+                  📚 docs
+                </button>
+                <button
+                  className="flex items-center gap-2 rounded-md border p-3 text-left hover:bg-gray-50"
+                  onClick={() => handleCollectionSelect('sql_examples')}
+                >
+                  🧮 sql_examples
+                </button>
+              </div>
+              <button
+                className="mt-4 w-full rounded-md border border-gray-300 py-2 text-gray-600 hover:bg-gray-50"
+                onClick={() => handleCollectionSelect(null)}
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        )}
     </div>
   );
 }
