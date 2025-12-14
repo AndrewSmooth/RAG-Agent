@@ -3,6 +3,7 @@
 Works with a chat model with tool calling support.
 """
 
+import os
 from datetime import UTC, datetime
 from typing import Literal, cast
 
@@ -18,6 +19,9 @@ from react_agent.utils import load_chat_model
 
 # Define the function that calls the model
 
+from fastmcp import Client
+
+mcp_client: Client | None = None
 
 async def call_model(
     state: State, runtime: Runtime[Context]

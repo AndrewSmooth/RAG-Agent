@@ -18,8 +18,7 @@ class GenerateTextService:
         # Search in knowledge base
         context = search_in_knowledge_base(
             query=query,
-            chroma_client=self.chroma_client,
-            embedding_fn=self.embedding_fn
+            chroma_client=self.chroma_client
         )
         
         # Format context - handle empty results

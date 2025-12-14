@@ -22,7 +22,7 @@ from fastmcp import Client
 async def run_mcp_client():
     # Connect via stdio to a local script
     time.sleep(15)
-    async with Client("http://0.0.0.0:8000/mcp") as client:
+    async with Client("http://0.0.0.0:8090/mcp") as client:
         tools = await client.list_tools()
         print(f"Available tools: {tools}")
         result = await client.call_tool("generate_sql", {"question": "Покажи мне всех сотрудников с зарплатой больше 100000"})
@@ -71,7 +71,7 @@ def run_app(query: str = None, run_server: bool = False):
     if run_server:
         db_params = {
             "host": "localhost",
-            "port": 5432,
+            "port": 5436,
             "dbname": "postgres",
             "user": "postgres",
             "password": "postgres",

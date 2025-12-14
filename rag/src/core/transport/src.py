@@ -106,4 +106,4 @@ class SQLServer:
     def run(self):
         """Запуск MCP-сервера"""
         # self.mcp.run()
-        self.mcp.run(transport="http", host="0.0.0.0", port=8000)
+        self.mcp.run(transport="http", host="0.0.0.0", port=8090)
