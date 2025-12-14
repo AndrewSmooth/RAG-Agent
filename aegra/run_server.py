@@ -23,12 +23,19 @@ if str(graphs_dir) not in sys.path:
     sys.path.insert(0, str(graphs_dir))
 
 
+
+
 def setup_environment():
     """Set up environment variables for testing"""
     # Set database URL for development
     if not os.getenv("DATABASE_URL"):
         os.environ["DATABASE_URL"] = (
             "postgresql+asyncpg://user:password@localhost:5432/aegra"
+        )
+    
+    if not os.getenv("RAG_URL"):
+        os.environ["RAG_URL"] = (
+            "http://0.0.0.0:8090/mcp"
         )
 
     # Set auth type (can be overridden)
