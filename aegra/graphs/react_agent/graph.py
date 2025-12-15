@@ -17,8 +17,6 @@ from react_agent.tools import TOOLS
 from react_agent.utils import load_chat_model
 
 # Define the function that calls the model
-
-
 async def call_model(
     state: State, runtime: Runtime[Context]
 ) -> dict[str, list[AIMessage]]:
@@ -42,31 +40,12 @@ async def call_model(
     )
 
     # Get the model's response
-    # response = cast(
-    #     "AIMessage",
-    #     await model.ainvoke(
-    #         [{"role": "system", "content": system_message}, *state.messages]
-    #     ),
-    # )
-
-    user_text = _get_last_message_text(state)
-    response = ''
-
-    if user_text:
-        if 't2t' in user_text:
-            pass
-            #     # from aegra.rag.src.core.service import get_answer_from_rag
-            #     answer = generate_answer(f'Контекст: {system_message}\n' + user_text)
-            #     response = AIMessage(content=answer)
-            # #TODO: similarly make for t2sql
-    else:
-        # Get the model's response
-        response = cast(
-            "AIMessage",
-            await model.ainvoke(
-                [{"role": "system", "content": system_message}, *state.messages]
-            ),
-        )
+    response = cast(
+        "AIMessage",
+        await model.ainvoke(
+            [{"role": "system", "content": system_message}, *state.messages]
+        ),
+    )
 
     # Handle the case when it's the last step and the model still wants to use a tool
     if state.is_last_step and response.tool_calls:

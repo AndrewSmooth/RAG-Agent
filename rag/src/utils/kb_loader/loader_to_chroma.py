@@ -16,38 +16,25 @@ def load_knowledge_base_to_chroma(
     docs = loader.load_docs(docs_type='doc', docs_dir='docs')
     sql_examples = loader.load_sql_examples()
 
-    # 2. Подключение к Chroma
-    chroma_client, embedding_fn = get_chroma_client(
-        chroma_url=chroma_url,
-        yandex_api_key=yandex_api_key,
-        yandex_folder_id=yandex_folder_id
-    )
+    collection_docs = loader.chroma_client.get_collection(name="docs")
 
-    # 3. Создание/обновление коллекций
-
-    # --- Коллекция: docs ---
-    collection_docs = chroma_client.get_or_create_collection(
-        name="docs",
-        embedding_function=embedding_fn
-    )
-
+    embeddings = [loader.embedding_fn(doc.page_content) for doc in docs]
 
     collection_docs.add(
         ids=[f"doc_{i}" for i in range(len(docs))],
         documents=[doc.page_content for doc in docs],
-        metadatas=[doc.metadata for doc in docs]
+        metadatas=[doc.metadata for doc in docs],
+        embeddings=embeddings,
     )
 
-    # --- Коллекция: sql_examples ---
-    collection_sql = chroma_client.get_or_create_collection(
-        name="sql_examples",
-        embedding_function=embedding_fn
-    )
+    collection_sql = loader.chroma_client.get_collection(name="sql_examples")
+    embeddings = [loader.embedding_fn(doc.page_content) for doc in sql_examples]
 
     collection_sql.add(
         ids=[f"sql_{i}" for i in range(len(sql_examples))],
         documents=[doc.page_content for doc in sql_examples],
-        metadatas=[doc.metadata for doc in sql_examples]
+        metadatas=[doc.metadata for doc in sql_examples],
+        embeddings=embeddings,
     )
 
     print("✅ База знаний загружена в удалённый Chroma")
