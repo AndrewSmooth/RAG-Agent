@@ -40,43 +40,43 @@ MCP_URL = "http://localhost:8008/mcp" # 8000 занят аегрой
 from fastmcp import Client
 import asyncio
 
-async def call_mcp_tool(name: str, arguments: dict) -> dict:
+async def call_mcp_tool(name: str, arguments: dict):
     # Connect via stdio to a local script
     async with Client("http://0.0.0.0:8008/mcp") as client:
-        tools = await client.list_tools()
-        print(f"Available tools: {tools}")
-        result = await client.call_tool(name, {"query": arguments['query']})
+        # tools = await client.list_tools()
+        # print(f"Available tools: {tools}")
+        result = await client.call_tool(name, arguments)
         print(f"Result: {result.content[0].text.strip()}")
         return result
 
 
-def call_mcp_tool1(name: str, arguments: dict) -> dict:
-    payload = {
-        "jsonrpc": "2.0",
-        "id": str(uuid.uuid4()),
-        "method": "tools/call",
-        "params": {
-            "name": "search_knowledge_base_tool",
-            "arguments": arguments
-        }
-    }
-    response = httpx.post(MCP_URL, json=payload, headers={
-            "Accept": "application/json"
-        }, timeout=30)
-    response.raise_for_status()
-    result = response.json()
+# def call_mcp_tool1(name: str, arguments: dict) -> dict:
+#     payload = {
+#         "jsonrpc": "2.0",
+#         "id": str(uuid.uuid4()),
+#         "method": "tools/call",
+#         "params": {
+#             "name": "search_knowledge_base_tool",
+#             "arguments": arguments
+#         }
+#     }
+#     response = httpx.post(MCP_URL, json=payload, headers={
+#             "Accept": "application/json"
+#         }, timeout=30)
+#     response.raise_for_status()
+#     result = response.json()
 
-    if "error" in result:
-        raise RuntimeError(f"MCP error: {result['error']}")
+#     if "error" in result:
+#         raise RuntimeError(f"MCP error: {result['error']}")
 
-    # fastmcp возвращает не просто result, а объект с structuredContent
-    mcp_response = result["result"]
-    return mcp_response["structuredContent"]  # ← вот тут нужные данные
+#     # fastmcp возвращает не просто result, а объект с structuredContent
+#     mcp_response = result["result"]
+#     return mcp_response["structuredContent"]  # ← вот тут нужные данные
 
-def search_knowledge_base(query: str) -> str:
+async def search_knowledge_base(query: str) -> str:
     """Ищи информацию в документации и базе знаний."""
     try:
-        result = asyncio.run(call_mcp_tool("search_knowledge_base_tool", {"query": query}))
+        result = await call_mcp_tool("search_knowledge_base_tool", {"query": query})
         # T2T-тул в fastmcp обычно возвращает строку в structuredContent
         if isinstance(result, str):
             return result
@@ -85,30 +85,25 @@ def search_knowledge_base(query: str) -> str:
     except Exception as e:
         return f"Ошибка T2T-поиска: {str(e)}"
 
-def generate_sql_and_run(question: str) -> str:
+async def generate_sql_and_run(query: str) -> str:
     """Ответь на вопрос, используя данные из базы."""
     try:
         # Шаг 1: генерация SQL
-        gen_result = call_mcp_tool("generate_sql", {"question": question})
+        print(query)
+        gen_result = await call_mcp_tool("generate_sql", {"query": query})
+        print(gen_result.data)
         # fastmcp возвращает строку SQL в structuredContent
         sql = gen_result if isinstance(gen_result, str) else str(gen_result)
         sql = sql.strip()
+        print(type(sql), sql)
 
         if not sql or sql.startswith("-- ОШИБКА"):
             return sql
+        
+        return {
+            "result": sql,
+        }
 
-        # Шаг 2: выполнение
-        exec_result = call_mcp_tool("run_sql_safely", {"sql": sql})
-        # exec_result — уже dict из structuredContent
-
-        if exec_result.get("success"):
-            rows = exec_result.get("data", [])
-            if not rows:
-                return "Запрос выполнен, но результат пуст."
-            lines = [", ".join(f"{k}={v}" for k, v in row.items()) for row in rows[:5]]
-            return "Результат:\n" + "\n".join(lines)
-        else:
-            return f"Ошибка выполнения: {exec_result.get('error', 'неизвестно')}"
     except Exception as e:
         return f"Ошибка T2SQL: {str(e)}"
 

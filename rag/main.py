@@ -24,13 +24,12 @@ async def run_mcp_client():
     async with Client("http://0.0.0.0:8008/mcp") as client:
         tools = await client.list_tools()
         print(f"Available tools: {tools}")
-        result = await client.call_tool("generate_sql", {"question": "Покажи мне всех сотрудников с зарплатой больше 100000"})
+        result = await client.call_tool("generate_sql", {"query": "Покажи мне всех сотрудников с зарплатой больше 100000"})
         print(f"Result: {result.content[0].text}")
 
 def run_app(query: str = None, run_server: bool = False):
     """Create and configure the application."""
     
-    print(yandex_api_key, yandex_folder_id)
     
     # Create chroma client and embedding function
     chroma_client, embedding_fn = get_chroma_client(
@@ -77,14 +76,7 @@ def run_app(query: str = None, run_server: bool = False):
             "autocommit": True
         }
         conn = psycopg.connect(**db_params)
-        server_thread = threading.Thread(target=run_mcp_server, args=(generate_sql_service, conn), daemon=False)
-        server_thread.start()
-
-        # 2. Ждём, пока сервер станет доступен
-        time.sleep(3)  # или retry-логика
-
-        # 3. Запускаем клиента
-        asyncio.run(run_mcp_client())
+        run_mcp_server(generate_sql_service, conn)
 
 def main():
     parser = argparse.ArgumentParser()

@@ -41,6 +41,10 @@ dependencies = [
     "sqlalchemy>=2.0.0",
     "uvicorn>=0.35.0",
     "langfuse>=3.3.4",
+    "fastmcp>=2.14.1",
+    "yandexcloud>=0.371.0",
+    "langchain-community>=0.3.31",
+    "langchain-core>=0.3.80",
 ]
 
 [project.urls]

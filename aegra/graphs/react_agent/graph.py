@@ -15,6 +15,8 @@ from react_agent.context import Context
 from react_agent.state import InputState, State
 from react_agent.tools import TOOLS
 from react_agent.utils import load_chat_model
+from langchain_core.runnables.config import RunnableConfig
+config = RunnableConfig(recursion_limit=3)
 
 # Define the function that calls the model
 async def call_model(
@@ -42,8 +44,12 @@ async def call_model(
     # Get the model's response
     response = cast(
         "AIMessage",
-        await model.ainvoke(
-            [{"role": "system", "content": system_message}, *state.messages]
+        model.invoke(
+            [
+                {"role": "system", "content": system_message},
+                *state.messages,
+            ],
+            config,
         ),
     )
 
@@ -117,6 +123,8 @@ builder.add_conditional_edges(
     # based on the output from route_model_output
     route_model_output,
 )
+
+builder.add_edge("call_model", "tools")
 
 # Add a normal edge from `tools` to `call_model`
 # This creates a cycle: after using tools, we always return to the model

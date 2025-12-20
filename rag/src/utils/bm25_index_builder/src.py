@@ -26,12 +26,11 @@ class BM25IndexBuilder:
         # Загружаем все типы документов
         doc_type_map = [
             ("doc", self.kb_loader.load_docs(docs_type='doc', docs_dir='docs')),
-            ("sql_example", self.kb_loader.load_sql_examples)
+            ("sql_example", self.kb_loader.load_sql_examples())
         ]
 
-        for doc_type, load_func in doc_type_map:
+        for doc_type, docs in doc_type_map:
             try:
-                docs: List[Document] = load_func()
                 for doc in docs:
                     source = doc.metadata["source"]
                     doc_id = self._generate_id(doc_type, source)

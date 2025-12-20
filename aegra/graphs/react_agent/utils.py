@@ -3,7 +3,8 @@
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import BaseMessage
-
+import os
+import httpx
 
 def get_message_text(msg: BaseMessage) -> str:
     """Get the text content of a message."""
@@ -24,4 +25,5 @@ def load_chat_model(fully_specified_name: str) -> BaseChatModel:
         fully_specified_name (str): String in the format 'provider/model'.
     """
     provider, model = fully_specified_name.split("/", maxsplit=1)
-    return init_chat_model(model, model_provider=provider)
+    http_client = httpx.Client(verify=False)
+    return init_chat_model(model, model_provider=provider, base_url=os.getenv("OPENAI_BASE_URL"), http_client=http_client)
