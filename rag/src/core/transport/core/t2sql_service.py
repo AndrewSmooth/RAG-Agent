@@ -23,7 +23,6 @@ class SQLService:
     ) -> str:
 
         try:
-            return "SELECT * FROM DUAL;"
             sql = self.sql_service.generate(question)
             return sql.strip()
         except Exception as e:

@@ -35,43 +35,18 @@ def calculator(a: int, b: int) -> int:
     """Calculate the sum of two numbers."""
     return a + b
 
-MCP_URL = "http://localhost:8008/mcp" # 8000 занят аегрой
 
 from fastmcp import Client
 import asyncio
 
 async def call_mcp_tool(name: str, arguments: dict):
     # Connect via stdio to a local script
-    async with Client("http://0.0.0.0:8008/mcp") as client:
+    async with Client("../rag/main.py") as client:
         # tools = await client.list_tools()
         # print(f"Available tools: {tools}")
         result = await client.call_tool(name, arguments)
         print(f"Result: {result.content[0].text.strip()}")
-        return result
-
-
-# def call_mcp_tool1(name: str, arguments: dict) -> dict:
-#     payload = {
-#         "jsonrpc": "2.0",
-#         "id": str(uuid.uuid4()),
-#         "method": "tools/call",
-#         "params": {
-#             "name": "search_knowledge_base_tool",
-#             "arguments": arguments
-#         }
-#     }
-#     response = httpx.post(MCP_URL, json=payload, headers={
-#             "Accept": "application/json"
-#         }, timeout=30)
-#     response.raise_for_status()
-#     result = response.json()
-
-#     if "error" in result:
-#         raise RuntimeError(f"MCP error: {result['error']}")
-
-#     # fastmcp возвращает не просто result, а объект с structuredContent
-#     mcp_response = result["result"]
-#     return mcp_response["structuredContent"]  # ← вот тут нужные данные
+        return result.content[0].text.strip()
 
 async def search_knowledge_base(query: str) -> str:
     """Ищи информацию в документации и базе знаний."""
@@ -90,22 +65,14 @@ async def generate_sql_and_run(query: str) -> str:
     try:
         # Шаг 1: генерация SQL
         print(query)
-        gen_result = await call_mcp_tool("generate_sql", {"query": query})
-        print(gen_result.data)
-        # fastmcp возвращает строку SQL в structuredContent
-        sql = gen_result if isinstance(gen_result, str) else str(gen_result)
-        sql = sql.strip()
-        print(type(sql), sql)
-
-        if not sql or sql.startswith("-- ОШИБКА"):
-            return sql
+        gen_result = await call_mcp_tool("generate_sql", {"question": query})
         
-        return {
-            "result": sql,
-        }
+        print(gen_result)
+        return gen_result
 
     except Exception as e:
         return f"Ошибка T2SQL: {str(e)}"
+
 
 TOOLS: list[Callable[..., Any]] = [
     search,

@@ -124,7 +124,7 @@ builder.add_conditional_edges(
     route_model_output,
 )
 
-builder.add_edge("call_model", "tools")
+# builder.add_edge("call_model", "tools")
 
 # Add a normal edge from `tools` to `call_model`
 # This creates a cycle: after using tools, we always return to the model
