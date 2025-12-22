@@ -6,6 +6,10 @@ from langchain_core.messages import BaseMessage
 import os
 import httpx
 
+from fastmcp import Client
+
+client = Client("../rag/main.py")
+
 def get_message_text(msg: BaseMessage) -> str:
     """Get the text content of a message."""
     content = msg.content

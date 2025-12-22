@@ -3,7 +3,7 @@
 from src.utils.query_enhancer import QueryEnhancer
 from src.utils.bm25_index_builder import BM25IndexBuilder
 from .hybrid_searcher import hybrid_search
-from src.utils.prompts.generate_sql import RAG_SQL_PROMPT_TEMPLATE
+from src.utils.prompts.generate_sql import RAG_SQL_PROMPT_TEMPLATE, RAG_SQL_HYBRID_TEMPLATE
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser

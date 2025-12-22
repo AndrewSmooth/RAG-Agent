@@ -8,42 +8,15 @@ consider implementing more robust and specialized tools tailored to your needs.
 
 from collections.abc import Callable
 from typing import Any
-import httpx
-import uuid
 
-from langgraph.runtime import get_runtime
-
-from react_agent.context import Context
-
-
-async def search(query: str) -> dict[str, Any] | None:
-    """Search for general web results.
-
-    This function performs a search using the Tavily search engine, which is designed
-    to provide comprehensive, accurate, and trusted results. It's particularly useful
-    for answering questions about current events.
-    """
-    runtime = get_runtime(Context)
-    return {
-        "query": query,
-        "max_search_results": runtime.context.max_search_results,
-        "results": f"Simulated search results for '{query}'",
-    }
-
-# Решил оставить просто чтобы чекать что тулы вообще работают, т.к. не зависит от рага
-def calculator(a: int, b: int) -> int:
-    """Calculate the sum of two numbers."""
-    return a + b
-
-
-from fastmcp import Client
-import asyncio
+from .utils import client
 
 async def call_mcp_tool(name: str, arguments: dict):
     # Connect via stdio to a local script
-    async with Client("../rag/main.py") as client:
-        # tools = await client.list_tools()
-        # print(f"Available tools: {tools}")
+    global client
+    async with client:
+        tools = await client.list_tools()
+        print(f"Available tools: {tools}")
         result = await client.call_tool(name, arguments)
         print(f"Result: {result.content[0].text.strip()}")
         return result.content[0].text.strip()
@@ -75,8 +48,6 @@ async def generate_sql_and_run(query: str) -> str:
 
 
 TOOLS: list[Callable[..., Any]] = [
-    search,
-    calculator,
     search_knowledge_base,
     generate_sql_and_run,
 ]

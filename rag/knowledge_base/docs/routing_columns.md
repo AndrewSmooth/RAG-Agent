@@ -1,0 +1,27 @@
+# Table: routing
+## Columns
+- `id`: уникальный идентификатор маршрута производства (первичный ключ)
+- `product_id`: ссылка на продукт (внешний ключ)
+- `version`: версия маршрута
+- `effective_date`: дата вступления в силу
+- `expiration_date`: дата окончания действия
+- `description`: описание технологического процесса
+- `status`: статус маршрута (active, inactive, under_review, superseded)
+- `estimated_duration_hours`: оценочная продолжительность всего процесса в часах
+- `work_centers_sequence`: последовательность рабочих центров (в формате JSON)
+- `operations_sequence`: последовательность операций (в формате JSON)
+- `parallel_operations`: параллельные операции (в формате JSON)
+- `quality_checkpoints`: контрольные точки качества (в формате JSON)
+- `inspection_levels`: уровни инспекции (в формате JSON)
+- `safety_critical_points`: критические точки безопасности (в формате JSON)
+- `environmental_impact_points`: точки экологического воздействия (в формате JSON)
+- `material_flow`: схема движения материалов (в формате JSON)
+- `information_flow`: схема движения информации (в формате JSON)
+- `automation_points`: точки автоматизации (в формате JSON)
+- `bottleneck_points`: узкие места процесса
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

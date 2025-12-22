@@ -16,6 +16,8 @@ dependencies = [
     "sqlglot>=28.0.0",
     "python-multipart",
     "psycopg>=3.3.2",
+    "psycopg-binary==3.3.2",
+    "psycopg-pool==3.3.0",
     "rank-bm25>=0.2.2",
     "fastmcp>=2.14.0",
     "fastapi>=0.116.1",

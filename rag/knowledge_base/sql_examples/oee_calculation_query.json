@@ -1,0 +1,4 @@
+{
+  "question": "Рассчитай коэффициент OEE для всех производственных линий за последний месяц, разбив на компоненты: доступность, производительность и качество",
+  "sql": "SELECT pl.name as production_line, ROUND(AVG(CASE WHEN wo.status = 'completed' THEN 1 ELSE 0 END) * 100, 2) as availability_percent, ROUND(AVG(wo.actual_duration_hours / wo.planned_duration_hours) * 100, 2) as performance_rate_percent, ROUND(COUNT(CASE WHEN wo.quality_checks_passed = true THEN 1 END) * 100.0 / COUNT(*), 2) as quality_rate_percent, ROUND(AVG(CASE WHEN wo.status = 'completed' THEN 1 ELSE 0 END) * AVG(wo.actual_duration_hours / wo.planned_duration_hours) * (COUNT(CASE WHEN wo.quality_checks_passed = true THEN 1 END) * 100.0 / COUNT(*) / 100), 2) as oee_percent FROM production_lines pl JOIN work_orders wo ON pl.id = wo.production_line_id WHERE wo.planned_start_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) GROUP BY pl.id, pl.name ORDER BY oee_percent DESC;"
+}

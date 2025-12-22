@@ -1,0 +1,31 @@
+# Table: bom (Bill of Materials)
+## Columns
+- `id`: уникальный идентификатор спецификации (первичный ключ)
+- `product_id`: ссылка на продукт (внешний ключ)
+- `version`: версия спецификации
+- `effective_date`: дата вступления в силу
+- `expiration_date`: дата окончания действия
+- `description`: описание состава продукта
+- `status`: статус спецификации (active, inactive, under_review, superseded)
+- `total_components`: общее количество компонентов
+- `direct_materials_cost`: стоимость прямых материалов
+- `cost_currency`: валюта стоимости
+- `weight_kg`: вес готового продукта в кг
+- `volume_m3`: объем готового продукта в м³
+- `hazardous_materials`: опасные материалы (в формате JSON)
+- `restricted_materials`: ограниченные материалы (в формате JSON)
+- `sub_assemblies`: сборочные единицы (в формате JSON)
+- `raw_materials`: сырьевые материалы (в формате JSON)
+- `packaging_materials`: упаковочные материалы (в формате JSON)
+- `consumables`: расходные материалы (в формате JSON)
+- `safety_requirements`: требования безопасности при работе с материалами
+- `storage_conditions`: условия хранения материалов
+- `shelf_life_days`: срок хранения в днях
+- `environmental_impact`: экологическое воздействие (в формате JSON)
+- `recycling_instructions`: инструкции по утилизации
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

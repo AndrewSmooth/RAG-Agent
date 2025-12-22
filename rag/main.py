@@ -27,7 +27,7 @@ async def run_mcp_client():
         result = await client.call_tool("generate_sql", {"query": "Покажи мне всех сотрудников с зарплатой больше 100000"})
         print(f"Result: {result.content[0].text}")
 
-def run_app(query: str = None, run_server: bool = False):
+def run_app():
     """Create and configure the application."""
     
     
@@ -48,43 +48,25 @@ def run_app(query: str = None, run_server: bool = False):
     # The actual logic is now in setup.py which serves as the main entry point
     # This file can be used for simple demonstrations or testing
     # Create SQL generation service
-    # generate_sql_service = only_semantic.GenerateSQLService(chroma_client, embedding_fn, llm)
-    generate_sql_service = sql_hybrid_with_prompting.GenerateSQLService(chroma_client, embedding_fn, llm, kb_loader)
-    user_question = "Show all employees in the Engineering department"
-    generated_sql = generate_sql_service.generate(user_question)
-    print(f"Question: {user_question}")
-    print(f"Generated SQL: {generated_sql}")
-    
-    # Create text generation service
+    generate_sql_service = sql_only_semantic.GenerateSQLService(chroma_client, embedding_fn, llm)
+    # generate_sql_service = sql_hybrid_with_prompting.GenerateSQLService(chroma_client, embedding_fn, llm, kb_loader)
     generate_text_service = GenerateTextService(chroma_client, embedding_fn, llm)
-    if query:
-        text_question = query
-    else:
-        text_question = "What is the employee management system about?"
-    generated_text = generate_text_service.generate(text_question)
-    print(f"\nQuestion: {text_question}")
-    print(f"Generated Text: {generated_text}")
 
-
-    if run_server:
-        db_params = {
-            "host": "localhost",
-            "port": 5433,
-            "dbname": "postgres",
-            "user": "postgres",
-            "password": "postgres",
-            "autocommit": True
-        }
-        conn = psycopg.connect(**db_params)
-        run_mcp_server(generate_sql_service, conn)
+    db_params = {
+        "host": "localhost",
+        "port": 5433,
+        "dbname": "postgres",
+        "user": "postgres",
+        "password": "postgres",
+        "autocommit": True
+    }
+    conn = psycopg.connect(**db_params)
+    run_mcp_server(generate_sql_service, generate_text_service, conn)
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--load-kb", action="store_true", help="Load knowledge base to Chroma")
-    parser.add_argument("--query", type=str, help="Query to convert to SQL")
-    parser.add_argument("--run-server", action="store_true", help="Run mcp server")
     args = parser.parse_args()
-    query = ''
 
     if args.load_kb:
         load_knowledge_base_to_chroma(
@@ -93,12 +75,8 @@ def main():
             yandex_api_key=os.getenv("YANDEX_CLOUD_API_KEY"),
             yandex_folder_id=os.getenv("YANDEX_CLOUD_FOLDER")
         )
-        query = args.query
     
-    if args.run_server:
-        run_app(None, True)
-    else:
-        run_app(query)
+    run_app()
 
 if __name__ == "__main__":
     main()

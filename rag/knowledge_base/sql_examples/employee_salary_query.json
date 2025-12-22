@@ -1,0 +1,4 @@
+{
+  "question": "Покажи всех сотрудников с зарплатой выше 100000 рублей, отсортированных по убыванию зарплаты",
+  "sql": "SELECT id, first_name, last_name, salary, department_id FROM employees WHERE salary > 100000 AND is_active = true ORDER BY salary DESC;"
+}

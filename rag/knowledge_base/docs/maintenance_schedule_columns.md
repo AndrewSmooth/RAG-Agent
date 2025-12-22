@@ -1,0 +1,25 @@
+# Table: maintenance_schedule
+## Columns
+- `id`: уникальный идентификатор графика технического обслуживания (первичный ключ)
+- `machine_id`: ссылка на оборудование (внешний ключ)
+- `schedule_type`: тип графика (preventive, predictive, corrective, calibration)
+- `task_description`: описание задачи технического обслуживания
+- `frequency`: частота выполнения (daily, weekly, monthly, quarterly, annually)
+- `interval_days`: интервал выполнения в днях
+- `duration_hours`: продолжительность задачи в часах
+- `required_skills`: необходимые навыки персонала (в формате JSON)
+- `required_tools`: необходимые инструменты (в формате JSON)
+- `required_spare_parts`: необходимые запасные части (в формате JSON)
+- `safety_procedures`: обязательные процедуры безопасности (в формате JSON)
+- `estimated_cost`: предполагаемая стоимость выполнения
+- `cost_currency`: валюта стоимости
+- `priority`: приоритет задачи (low, medium, high, critical)
+- `last_completed_date`: дата последнего выполнения
+- `next_scheduled_date`: дата следующего запланированного выполнения
+- `completion_tolerance_days`: допустимое отклонение от графика в днях
+- `created_at`: дата и время создания записи
+- `updated_at`: дата и время последнего обновления записи
+- `created_by`: идентификатор пользователя, создавшего запись
+- `updated_by`: идентификатор пользователя, последним обновившего запись
+- `is_active`: флаг активности записи (true/false)
+- `version`: версия записи для контроля параллельных изменений

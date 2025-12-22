@@ -53,9 +53,20 @@ def search_in_knowledge_base(query: str, chroma_client, embedding_fn, top_k=5):
 
     top_documents = [id_to_doc[doc_id] for doc_id in top_ids if doc_id in id_to_doc]
 
+    # Собираем информацию о типе документа для каждого ID
+    id_to_type = {}
+    for doc_id in (results_docs["ids"][0] if results_docs["ids"] else []):
+        id_to_type[doc_id] = "docs"
+    for doc_id in (results_sql["ids"][0] if results_sql["ids"] else []):
+        id_to_type[doc_id] = "sql_examples"
+    
+    # Определяем тип для каждого из топ-документов
+    doc_types = [id_to_type.get(doc_id, "unknown") for doc_id in top_ids]
+    
     # Возвращаем ВСЁ, что нужно для гибридного поиска
     return {
         "documents": top_documents,
         "ids": top_ids,
-        "distances": top_distances
+        "distances": top_distances,
+        "doc_types": doc_types
     }

@@ -1,0 +1,682 @@
+[
+  {
+    "question": "Покажи всех активных сотрудников",
+    "sql": "SELECT id, first_name, last_name, email, department_id, salary_grade, hire_date FROM employee WHERE is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников с зарплатой выше 100000",
+    "sql": "SELECT id, first_name, last_name, salary, department_id, salary_grade FROM employee WHERE salary > 100000 AND is_active = true;"
+  },
+  {
+    "question": "Покажи список всех департаментов",
+    "sql": "SELECT id, name, manager_id, cost_center, budget FROM department WHERE is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников из отдела продаж",
+    "sql": "SELECT e.id, e.first_name, e.last_name, e.email, e.salary_grade, e.salary FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Sales' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников с грейдом D1",
+    "sql": "SELECT id, first_name, last_name, salary, hire_date, department_id FROM employee WHERE salary_grade = 'D1' AND is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, нанятых в этом году",
+    "sql": "SELECT id, first_name, last_name, hire_date, department_id, salary_grade FROM employee WHERE YEAR(hire_date) = YEAR(CURDATE()) AND is_active = true;"
+  },
+  {
+    "question": "Покажи все активные спецификации (BOM)",
+    "sql": "SELECT id, product_id, version, status, created_at, created_by FROM bom WHERE status = 'active' AND is_active = true;"
+  },
+  {
+    "question": "Покажи все компоненты для спецификации с ID 5",
+    "sql": "SELECT material_id, component_type, quantity_per_unit, unit_of_measure, cost_per_unit, cost_currency FROM bom_component WHERE bom_id = 5 AND is_active = true;"
+  },
+  {
+    "question": "Покажи все программы обучения",
+    "sql": "SELECT id, name, duration_days, is_mandatory, description FROM training_program WHERE is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, прошедших обучение по 'Safety Training'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, e.department_id, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Safety Training' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи текущую структуру окладов",
+    "sql": "SELECT grade, step, base_salary, salary_currency, effective_date FROM salary_structure WHERE effective_date <= CURDATE() AND (expiration_date IS NULL OR expiration_date >= CURDATE()) AND is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников без указанных данных о грейде",
+    "sql": "SELECT id, first_name, last_name, salary, department_id, hire_date FROM employee WHERE salary_grade IS NULL AND is_active = true;"
+  },
+  {
+    "question": "Покажи все завершённые курсы обучения за текущий месяц",
+    "sql": "SELECT employee_id, program_id, enrollment_date, completion_date, grade FROM employee_training WHERE enrollment_status = 'completed' AND MONTH(completion_date) = MONTH(CURDATE()) AND YEAR(completion_date) = YEAR(CURDATE());"
+  },
+  {
+    "question": "Покажи всех сотрудников, у кого зарплата ниже 80000",
+    "sql": "SELECT id, first_name, last_name, salary, department_id, salary_grade FROM employee WHERE salary < 80000 AND is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, работающих в Москве",
+    "sql": "SELECT id, first_name, last_name, email, department_id, salary_grade, salary FROM employee WHERE location = 'Moscow' AND is_active = true;"
+  },
+  {
+    "question": "Покажи все компоненты типа 'metal'",
+    "sql": "SELECT bom_id, material_id, quantity_per_unit, cost_per_unit FROM bom_component WHERE component_type = 'raw_material' AND is_active = true;"
+  },
+  {
+    "question": "Покажи среднюю зарплату по компании",
+    "sql": "SELECT ROUND(AVG(salary), 2) as avg_salary FROM employee WHERE is_active = true;"
+  },
+  {
+    "question": "Покажи количество сотрудников в компании",
+    "sql": "SELECT COUNT(*) as employee_count FROM employee WHERE is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников с фамилией Иванов",
+    "sql": "SELECT id, first_name, last_name, email, department_id, salary, salary_grade FROM employee WHERE last_name = 'Иванов' AND is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников из IT-отдела",
+    "sql": "SELECT e.id, e.first_name, e.last_name, e.email, e.salary_grade FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'IT' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников с должностью 'Менеджер'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, e.salary FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name = 'Менеджер' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые работают в компании более 5 лет",
+    "sql": "SELECT id, first_name, last_name, hire_date, DATEDIFF(CURDATE(), hire_date) / 365 as years_in_company FROM employee WHERE DATEDIFF(CURDATE(), hire_date) > 1825 AND is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых оклад выше среднего",
+    "sql": "SELECT id, first_name, last_name, salary FROM employee WHERE salary > (SELECT AVG(salary) FROM employee WHERE is_active = true) AND is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые были повышены в этом году",
+    "sql": "SELECT e.id, e.first_name, e.last_name, e.salary_grade, pr.review_date FROM employee e JOIN performance_review pr ON e.id = pr.employee_id WHERE pr.review_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR) AND pr.promotion_recommendation = 'yes' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть сертификаты",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.certificate_number, et.certificate_date FROM employee e JOIN employee_training et ON e.id = et.employee_id WHERE et.certificate_issued = true AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Leadership Training'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Leadership Training' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть премиальные схемы",
+    "sql": "SELECT e.id, e.first_name, e.last_name, bs.name as bonus_scheme FROM employee e JOIN bonus_scheme bs ON e.company_id = bs.company_id WHERE e.bonus_eligible = true AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые работают в производственном подразделении",
+    "sql": "SELECT e.id, e.first_name, e.last_name, pl.name as plant_name FROM employee e JOIN department d ON e.department_id = d.id JOIN plant pl ON d.business_unit_id = pl.id WHERE pl.name IS NOT NULL AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть план развития",
+    "sql": "SELECT e.id, e.first_name, e.last_name, pr.development_plan, pr.next_review_date FROM employee e JOIN performance_review pr ON e.id = pr.employee_id WHERE pr.development_plan IS NOT NULL AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Quality Control'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Quality Control' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к критическому оборудованию",
+    "sql": "SELECT e.id, e.first_name, e.last_name, m.name as machine_name FROM employee e JOIN machine ma ON e.department_id = ma.work_center_id JOIN machine m ON ma.id = m.id WHERE m.criticality_level = 5 AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Safety Procedures'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Safety Procedures' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.is_management = true AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Process Optimization'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Process Optimization' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к финансовым системам",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Finance' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Data Analysis'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Data Analysis' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам безопасности",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Security%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Project Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Project Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам контроля качества",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Quality Control' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Supply Chain Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Supply Chain Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам планирования",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Planner%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Inventory Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Inventory Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам обслуживания",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Maintenance' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Machine Operation'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Machine Operation' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам производства",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Production%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Quality Assurance'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Quality Assurance' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам логистики",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Logistics' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Warehouse Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Warehouse Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам продаж",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Sales%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Customer Service'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Customer Service' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам маркетинга",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Marketing' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Digital Marketing'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Digital Marketing' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам разработки",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Developer%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Software Development'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Software Development' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам тестирования",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'QA' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Test Automation'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Test Automation' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам DevOps",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%DevOps%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'CI/CD'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'CI/CD' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам мониторинга",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Monitoring' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'System Monitoring'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'System Monitoring' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам безопасности",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Security%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Network Security'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Network Security' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам аналитики",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Analytics' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Business Intelligence'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Business Intelligence' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам отчетности",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Analyst%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Data Visualization'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Data Visualization' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления проектами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Project Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Agile Methodology'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Agile Methodology' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления задачами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Coordinator%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Task Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Task Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления документами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Documentation' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Document Control'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Document Control' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления конфигурацией",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Configuration%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Configuration Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Configuration Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления изменениями",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Change Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Change Control'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Change Control' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления инцидентами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Incident%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Incident Response'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Incident Response' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления проблемами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Problem Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Problem Solving'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Problem Solving' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления знаниями",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Knowledge%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Knowledge Sharing'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Knowledge Sharing' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления рисками",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Risk Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Risk Assessment'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Risk Assessment' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления качеством",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Quality%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Quality Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Quality Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления производством",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Production' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Production Planning'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Production Planning' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления обслуживанием",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Maintenance%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Preventive Maintenance'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Preventive Maintenance' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления запасами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Inventory' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Inventory Optimization'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Inventory Optimization' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления поставками",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Supply%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Supply Chain Optimization'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Supply Chain Optimization' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления закупками",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Procurement' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Procurement Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Procurement Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления договорами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Contract%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Contract Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Contract Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления проектами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Project Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Project Planning'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Project Planning' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления ресурсами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Resource%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Resource Allocation'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Resource Allocation' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления временем",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Time Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Time Tracking'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Time Tracking' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления бюджетом",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Budget%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Budget Planning'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Budget Planning' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления финансами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Finance' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Financial Analysis'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Financial Analysis' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления отчетностью",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Reporting%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Report Generation'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Report Generation' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления метриками",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Metrics' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'KPI Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'KPI Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления производительностью",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Performance%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Performance Optimization'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Performance Optimization' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления эффективностью",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Efficiency' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Efficiency Improvement'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Efficiency Improvement' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления качеством продукции",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Quality%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Product Quality Control'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Product Quality Control' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления процессами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Process Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Process Improvement'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Process Improvement' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления технологиями",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Technology%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Technology Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Technology Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления инновациями",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Innovation' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Innovation Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Innovation Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления изменениями",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Change%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Change Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Change Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления рисками",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Risk Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Risk Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Risk Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления безопасностью",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Security%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Security Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Security Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления качеством",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Quality Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Quality Assurance'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Quality Assurance' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления производством",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Production%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Production Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Production Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления обслуживанием",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Maintenance Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Maintenance Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Maintenance Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления запасами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Inventory%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Inventory Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Inventory Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления поставками",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Supply Chain Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Supply Chain Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Supply Chain Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления закупками",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Procurement%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Procurement Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Procurement Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления договорами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Contract Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Contract Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Contract Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления проектами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Project%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Project Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Project Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления ресурсами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Resource Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Resource Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Resource Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления временем",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Time%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Time Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Time Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления бюджетом",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Budget Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Budget Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Budget Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления финансами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Finance%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Financial Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Financial Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления отчетностью",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Reporting' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Reporting Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Reporting Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления метриками",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Metrics%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Metrics Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Metrics Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления производительностью",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Performance Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Performance Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Performance Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления эффективностью",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Efficiency%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Efficiency Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Efficiency Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления качеством продукции",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Product Quality' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Product Quality Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Product Quality Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления процессами",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Process%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Process Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Process Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления технологиями",
+    "sql": "SELECT e.id, e.first_name, e.last_name, d.name as department_name FROM employee e JOIN department d ON e.department_id = d.id WHERE d.name = 'Technology Management' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Technology Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Technology Management' AND et.enrollment_status = 'completed';"
+  },
+  {
+    "question": "Покажи всех сотрудников, у которых есть доступ к системам управления инновациями",
+    "sql": "SELECT e.id, e.first_name, e.last_name, p.name as position_name FROM employee e JOIN position p ON e.position_id = p.id WHERE p.name LIKE '%Innovation%' AND e.is_active = true;"
+  },
+  {
+    "question": "Покажи всех сотрудников, которые прошли обучение по 'Innovation Management'",
+    "sql": "SELECT e.id, e.first_name, e.last_name, et.completion_date, et.grade FROM employee e JOIN employee_training et ON e.id = et.employee_id JOIN training_program tp ON et.program_id = tp.id WHERE tp.name = 'Innovation Management' AND et.enrollment_status = 'completed';"
+  }
+]
